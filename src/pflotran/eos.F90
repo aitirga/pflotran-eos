@@ -140,6 +140,27 @@ subroutine EOSRead(input,option)
                 call InputReadDouble(input,option,temparray(3))
                 call InputErrorMsg(input,option,'WATER_COMPRESSIBILITY', &
                                    'EOS,WATER,DENSITY,LINEAR')
+
+               case('LINEAR_SALT_MOLAL','LINEAR_SALT_MOLAR')
+                if ( (option%m_nacl_type == M_NACL_MASS_FRACTION_TYPE) .and. &
+                     (word /= 'LINEAR_SALT_MOLAL' ) ) then
+                  option%io_buffer = 'Water Density LINEAR_SALT_MOLAL"' // &
+                  '" can be used only with m_nacl_type = MASS_FRACTION_TYPE '
+                  call printErrMsg(option)
+                end if
+                if ( (option%m_nacl_type == M_NACL_MOLAR_TYPE) .and. &
+                     (word /= 'LINEAR_SALT_MOLAR' ) ) then
+                  option%io_buffer = 'Water Density LINEAR_SALT_MOLAR"' // &
+                  '" can be used only with m_nacl_type = MOLAR_TYPE '
+                  call printErrMsg(option)
+                end if
+                call InputReadDouble(input,option,temparray(1))
+                call InputErrorMsg(input,option,'REFERENCE_DENSITY', &
+                                   'EOS,WATER,DENSITY,LINEAR_SALT')
+                call InputReadDouble(input,option,temparray(2))
+                call InputErrorMsg(input,option, 'LINEAR_SALT_COEFFICIENT', &
+                                   'EOS,WATER,DENSITY,LINEAR_SALT')
+                                   
               case('QUADRATIC')
                 call InputPushBlock(input,option)
                 do
