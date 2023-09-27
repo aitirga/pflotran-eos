@@ -4539,8 +4539,7 @@ subroutine EOSWaterInputRecord()
     write(id,'(a)') 'Trangenstein'
   end if
 
-  if ((associated(EOSWaterDensityExtPtr,EOSWaterDenLinearSaltMolarExt) .or. &
-       associated(EOSWaterDensityExtPtr,EOSWaterDenLinearSaltMolalExt) &
+  if ((associated(EOSWaterDensityExtPtr,EOSWaterDenLinearSaltMolarExt) &
       ) .and. &
       (Uninitialized(linear_salt_reference_density) .or. &
        Uninitialized(linear_salt_coefficient)) &
