@@ -506,6 +506,15 @@ subroutine EOSWaterSetDensity(keyword,aux)
       EOSWaterDensityExtPtr => EOSWaterDensitySparrowExt
     case('DRIESNER')
       EOSWaterDensityExtPtr => EOSWaterDensityDriesnerExt
+    case('LINEAR_SALT_MOLAR')
+      linear_salt_reference_density = aux(1)
+      linear_salt_coefficient = aux(2)
+      constant_density = aux(1)
+      EOSWaterDensityPtr => EOSWaterDensityConstant
+      select case(keyword)
+        case('LINEAR_SALT_MOLAR')
+          EOSWaterDensityExtPtr => EOSWaterDenLinearSaltMolarExt
+      end select
     case default
       print *, 'Unknown pointer type "' // trim(keyword) // &
         '" in EOSWaterSetDensity().'
@@ -4524,6 +4533,17 @@ subroutine EOSWaterInputRecord()
     write(id,'(a29)',advance='no') 'water density: '
     write(id,'(a)') 'Trangenstein'
   end if
+
+    if ((associated(EOSWaterDensityExtPtr,EOSWaterDenLinearSaltMolarExt)
+      ) .and. &
+      (Uninitialized(linear_salt_reference_density) .or. &
+       Uninitialized(linear_salt_coefficient)) &
+      ) then
+    error_string = trim(error_string) // &
+      ' linear_salt density parameters (rho_ref, Beta) not set.'
+    ierr = 1
+  end if
+
 
   ! water viscosity [Pa-s]
   if (associated(EOSWaterViscosityPtr,EOSWaterViscosityConstant)) then
