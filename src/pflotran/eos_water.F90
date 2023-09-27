@@ -4544,9 +4544,8 @@ subroutine EOSWaterInputRecord()
       (Uninitialized(linear_salt_reference_density) .or. &
        Uninitialized(linear_salt_coefficient)) &
       ) then
-    error_string = trim(error_string) // &
-      ' linear_salt density parameters (rho_ref, Beta) not set.'
-    ierr = 1
+    write(id,'(a29)',advance='no') ' linear_salt density parameters (rho_ref, Beta) not set.'
+
   end if
 
 
