@@ -51,6 +51,11 @@ module EOS_Water_module
   ! halite saturated brine
   PetscBool :: halite_saturated_brine
 
+  ! linear salt concentration
+  PetscReal :: linear_salt_reference_density
+  PetscReal :: linear_salt_coefficient
+
+
   ! PVT tables - eos_tables
   class(eos_table_type), pointer :: pvt_table => null()
 
