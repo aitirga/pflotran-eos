@@ -5001,7 +5001,7 @@ end subroutine EOSWaterSteamTest
 
 subroutine EOSWaterDenLinearSaltMolarExt(tin, pin, aux, &
                                            calculate_derivatives, &
-                                           dw, dwmol, dwp, dwt, ierr)
+                                           dw, dwmol, dwp, dwt)
 
   ! Water density dependent on salt (molar, M, mol/L) concentration
   ! model taken from the Elder problem setup
@@ -5020,7 +5020,6 @@ subroutine EOSWaterDenLinearSaltMolarExt(tin, pin, aux, &
   PetscReal, intent(out) :: dwmol ! kmol/m^3
   PetscReal, intent(out) :: dwp ! kmol/m^3-Pa
   PetscReal, intent(out) :: dwt ! kmol/m^3-C
-  PetscErrorCode, intent(out) :: ierr
 
   PetscReal :: s  !salt molar concetration (M, mol/L)
 
