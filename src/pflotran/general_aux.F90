@@ -2881,16 +2881,19 @@ subroutine GeneralAuxNaClSolubility(T,x_sol,solubility_function)
        w_sol = c/(100+c)
        avg_molar_mass = (w_sol/fmw_comp(3)+(1-w_sol)/fmw_comp(1))**(-1)
        x_sol = w_sol/fmw_comp(3)*avg_molar_mass
+       x_sol = 10000.0
     case(2) !Lagner and Offerman
        ! mass fraction: kg solute/kg solution
        w_sol = 0.2628 + 62.75d-6 * T + 1.084d-6 * T**2
        avg_molar_mass = (w_sol/fmw_comp(3)+(1-w_sol)/fmw_comp(1))**(-1)
        x_sol = w_sol/fmw_comp(3)*avg_molar_mass
+       x_sol = 10000.0
     case default
       ! default solubility function is Sparrow
       w_sol = 0.2628 + 62.75d-6 * T + 1.084d-6 * T**2
       avg_molar_mass = (w_sol/fmw_comp(3)+(1-w_sol)/fmw_comp(1))**(-1)
       x_sol = w_sol/fmw_comp(3)*avg_molar_mass
+      x_sol = 10000.0
   end select
 
 end subroutine GeneralAuxNaClSolubility
