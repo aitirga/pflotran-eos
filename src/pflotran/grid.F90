@@ -829,6 +829,10 @@ subroutine GridLocalizeRegionsFromCellIDs(grid, region, option)
   VecScatter :: vec_scat
   PetscInt :: istart, iend
   PetscErrorCode :: ierr
+  character(len=32) :: int_as_string
+  integer :: ii
+  character(len=*) :: iface, option
+  type(RegionType) :: region  ! Assuming this is a defined type with fields 'cell_ids' and 'name'
 
   call VecCreateMPI(option%mycomm,grid%nlmax,PETSC_DECIDE,vec_cell_ids, &
                     ierr);CHKERRQ(ierr)
@@ -851,11 +855,16 @@ subroutine GridLocalizeRegionsFromCellIDs(grid, region, option)
         option%io_buffer = 'Face ID (' // trim(adjustl(word)) // ') greater &
           &than 14 in GridLocalizeRegionsFromCellIDs()'
         call PrintErrMsg(option)
-            option%io_buffer = 'iface = ' // iface // &
-          &' regionii = ' // region%cell_ids(ii) // &
-            &' regionname = ' // region%name // &
-              &' ii = ' // ii
-        call printErrMsg(option)
+
+
+        ! Convert integer to string
+        write(int_as_string, '(I32)') region%cell_ids(ii)
+        option = 'iface = ' // trim(adjustl(iface)) // &
+               ' regionii = ' // trim(adjustl(int_as_string)) // &
+               ' regionname = ' // trim(adjustl(region%name)) // &
+               ' ii = ' // trim(adjustl(int_as_string))
+
+call printErrMsg(option)
       endif
       tmp_scl_array(ii) = 10.d0**dble(region%faces(ii))
     else
