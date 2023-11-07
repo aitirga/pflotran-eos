@@ -851,6 +851,11 @@ subroutine GridLocalizeRegionsFromCellIDs(grid, region, option)
         option%io_buffer = 'Face ID (' // trim(adjustl(word)) // ') greater &
           &than 14 in GridLocalizeRegionsFromCellIDs()'
         call PrintErrMsg(option)
+            option%io_buffer = 'iface = ' // trim(adjustl(iface)) // &
+          &' regionii = ' // trim(adjustl(region%cell_ids(ii))) // &
+            &' regionname = ' // trim(adjustl(region%name)) // &
+              &' ii = ' // trim(adjustl(ii))
+        call printErrMsg(option)
       endif
       tmp_scl_array(ii) = 10.d0**dble(region%faces(ii))
     else
