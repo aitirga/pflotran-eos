@@ -853,10 +853,6 @@ subroutine GridLocalizeRegionsFromCellIDs(grid, region, option)
         call PrintErrMsg(option)
             option%io_buffer = 'region name = ' // trim(region%name)
         call PrintErrMsg(option)
-        option%io_buffer = 'cell id = ' // trim(region%cell_ids(ii))
-        call PrintErrMsg(option)
-        option%io_buffer = 'face id = ' // trim(region%faces(ii))
-        call PrintErrMsg(option)
       endif
       tmp_scl_array(ii) = 10.d0**dble(region%faces(ii))
     else
