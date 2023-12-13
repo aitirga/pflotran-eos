@@ -1461,7 +1461,7 @@ subroutine PatchUpdateCouplerAuxVarsG(patch,coupler,option)
   use Dataset_module
   use String_module
   use Field_module
-  use Realization_module
+  use Realization_Common_module
 
   implicit none
 
