@@ -864,7 +864,7 @@ subroutine PatchInitCouplerAuxVars(coupler_list,patch,option)
   type(coupler_type), pointer :: coupler
   class(tran_constraint_coupler_base_type), pointer :: cur_constraint_coupler
   PetscInt :: ndof
-  character(len=MAXSTRINGLENGTH) :: string
+  character(len=MAXSTRINGLENGTH) :: string, string2
   PetscInt :: temp_int
 
   if (.not.associated(coupler_list)) return
