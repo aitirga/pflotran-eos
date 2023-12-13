@@ -2523,7 +2523,11 @@ subroutine PatchUpdateCouplerAuxVarsG(patch,coupler,option)
       class is(dataset_ascii_type)
         coupler%flow_aux_real_var(FOUR_INTEGER,1:num_connections) = &
                                               general%salt_mole_fraction%dataset%rarray(1)
+
         dof4 = PETSC_TRUE
+        ! print the general%salt_mole_fraction%dataset%rarray(1)
+        print *, 'general%salt_mole_fraction%dataset%rarray(1) = ', general%salt_mole_fraction%dataset%rarray(1)
+
       class is(dataset_gridded_hdf5_type)
         call PatchUpdateCouplerGridDataset(coupler,option,patch%grid,selector, &
                                            FOUR_INTEGER)
