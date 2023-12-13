@@ -2548,12 +2548,12 @@ subroutine PatchUpdateCouplerAuxVarsG(patch,coupler,option)
 
       class is (dataset_common_hdf5_type)
               string = '' ! group name
-              string2 = dataset%hdf5_dataset_name
+              string2 = selector%hdf5_dataset_name
               print *, 'here: string2 = ', string2
               call HDF5ReadCellIndexedRealArray(realization,field%work, &
-                dataset%filename, &
+                selector%filename, &
                 string,string2, &
-                dataset%realization_dependent)
+                selector%realization_dependent)
                 print *, 'here: field%work = ', field%work
 
       class default
