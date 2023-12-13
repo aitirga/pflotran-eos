@@ -864,7 +864,7 @@ subroutine PatchInitCouplerAuxVars(coupler_list,patch,option)
   type(coupler_type), pointer :: coupler
   class(tran_constraint_coupler_base_type), pointer :: cur_constraint_coupler
   PetscInt :: ndof
-  character(len=MAXSTRINGLENGTH) :: string
+  character(len=MAXSTRINGLENGTH) :: string, string2
   PetscInt :: temp_int
 
   if (.not.associated(coupler_list)) return
@@ -1460,8 +1460,17 @@ subroutine PatchUpdateCouplerAuxVarsG(patch,coupler,option)
   use Dataset_Ascii_class
   use Dataset_module
   use String_module
+  use Field_module
+  use Realization_Subsurface_class
 
   implicit none
+
+
+  type(field_type), pointer :: field
+  type(realization_subsurface_type), pointer :: realization
+
+
+
 
   type(patch_type) :: patch
   type(coupler_type), pointer :: coupler
@@ -1476,8 +1485,10 @@ subroutine PatchUpdateCouplerAuxVarsG(patch,coupler,option)
   PetscReal :: gas_sat, air_pressure, gas_pressure, liq_pressure, &
                precipitate_sat
 
+  PetscReal, pointer :: vec_ptr(:)
+
   PetscReal :: dummy_real
-  character(len=MAXSTRINGLENGTH) :: string
+  character(len=MAXSTRINGLENGTH) :: string, string2
   PetscErrorCode :: ierr
 
   PetscInt :: num_connections
@@ -1497,6 +1508,10 @@ subroutine PatchUpdateCouplerAuxVarsG(patch,coupler,option)
   dof3 = PETSC_FALSE
   dof4 = PETSC_FALSE
   real_count = 0
+  field => patch%field
+
+  call VecZeroEntries(field%work,ierr);CHKERRQ(ierr)
+  call VecGetArrayF90(field%work,vec_ptr,ierr);CHKERRQ(ierr)
 
   ! mapping of flow_aux_mapping to the flow_aux_real_var array:
   if (associated(coupler%flow_aux_mapping)) then
@@ -2526,12 +2541,22 @@ subroutine PatchUpdateCouplerAuxVarsG(patch,coupler,option)
 
         dof4 = PETSC_TRUE
         ! print the general%salt_mole_fraction%dataset%rarray(1)
-        print *, 'general%salt_mole_fraction%dataset%rarray(1) = ', general%salt_mole_fraction%dataset%rarray(1)
 
       class is(dataset_gridded_hdf5_type)
         call PatchUpdateCouplerGridDataset(coupler,option,patch%grid,selector, &
                                            FOUR_INTEGER)
+
         dof4 = PETSC_TRUE
+
+      class is (dataset_common_hdf5_type)
+              string = '' ! group name
+              string2 = selector%hdf5_dataset_name
+              call HDF5ReadCellIndexedRealArray(realization,field%work, &
+                selector%filename, &
+                string,string2, &
+                selector%realization_dependent)
+                print *, 'here: field%work = ', field%work
+
       class default
         call PrintMsg(option,'general%salt_mole_fraction%dataset')
         call DatasetUnknownClass(selector,option, &
