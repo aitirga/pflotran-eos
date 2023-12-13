@@ -2067,7 +2067,6 @@ subroutine PMRTRestartHDF5(this, pm_grp_id)
                                     LOCAL,option)
 
     if (checkpoint_activity_coefs == ONE_INTEGER) then
-
       do i = 1, realization%reaction%naqcomp
         write(dataset_name,*) i
         dataset_name = 'Aq_comp_' // trim(adjustl(dataset_name))
