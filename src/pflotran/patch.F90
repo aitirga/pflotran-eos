@@ -1460,8 +1460,15 @@ subroutine PatchUpdateCouplerAuxVarsG(patch,coupler,option)
   use Dataset_Ascii_class
   use Dataset_module
   use String_module
+  use Field_module
 
   implicit none
+
+
+  type(field_type), pointer :: field
+
+
+
 
   type(patch_type) :: patch
   type(coupler_type), pointer :: coupler
@@ -1476,8 +1483,10 @@ subroutine PatchUpdateCouplerAuxVarsG(patch,coupler,option)
   PetscReal :: gas_sat, air_pressure, gas_pressure, liq_pressure, &
                precipitate_sat
 
+  PetscReal, pointer :: vec_ptr(:)
+
   PetscReal :: dummy_real
-  character(len=MAXSTRINGLENGTH) :: string
+  character(len=MAXSTRINGLENGTH) :: string, string2
   PetscErrorCode :: ierr
 
   PetscInt :: num_connections
@@ -1497,6 +1506,10 @@ subroutine PatchUpdateCouplerAuxVarsG(patch,coupler,option)
   dof3 = PETSC_FALSE
   dof4 = PETSC_FALSE
   real_count = 0
+  field => patch%field
+
+  call VecZeroEntries(field%work,ierr);CHKERRQ(ierr)
+  call VecGetArrayF90(field%work,vec_ptr,ierr);CHKERRQ(ierr)
 
   ! mapping of flow_aux_mapping to the flow_aux_real_var array:
   if (associated(coupler%flow_aux_mapping)) then
@@ -10175,7 +10188,7 @@ subroutine PatchVerifyDatasetGriddedForFlux(dataset,coupler,option)
   type(coupler_type) :: coupler
   type(option_type) :: option
 
-  character(len=MAXSTRINGLENGTH) :: string, string2
+  character(len=MAXSTRINGLENGTH) :: string
   PetscInt :: i, dataset_size
 
   ! check if dataset is cell-centered:
