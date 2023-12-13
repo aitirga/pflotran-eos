@@ -1461,13 +1461,13 @@ subroutine PatchUpdateCouplerAuxVarsG(patch,coupler,option)
   use Dataset_module
   use String_module
   use Field_module
-  use Realization_Common_module
+  use Realization_Subsurface_class
 
   implicit none
 
 
   type(field_type), pointer :: field
-  type(realization_type), pointer :: realization
+  type(realization_subsurface_type), pointer :: realization
 
 
 
