@@ -10189,7 +10189,7 @@ subroutine PatchVerifyDatasetGriddedForFlux(dataset,coupler,option)
   type(coupler_type) :: coupler
   type(option_type) :: option
 
-  character(len=MAXSTRINGLENGTH) :: string
+  character(len=MAXSTRINGLENGTH) :: string, string2
   PetscInt :: i, dataset_size
 
   ! check if dataset is cell-centered:
