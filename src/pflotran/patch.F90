@@ -2525,23 +2525,12 @@ subroutine PatchUpdateCouplerAuxVarsG(patch,coupler,option)
                                               general%salt_mole_fraction%dataset%rarray(1)
 
         dof4 = PETSC_TRUE
-        ! print the general%salt_mole_fraction%dataset%rarray(1)
 
       class is(dataset_gridded_hdf5_type)
         call PatchUpdateCouplerGridDataset(coupler,option,patch%grid,selector, &
                                            FOUR_INTEGER)
 
         dof4 = PETSC_TRUE
-
-      class is (dataset_common_hdf5_type)
-              string = '' ! group name
-              string2 = dataset%hdf5_dataset_name
-              print *, 'here: string2 = ', string2
-              call HDF5ReadCellIndexedRealArray(realization,field%work, &
-                dataset%filename, &
-                string,string2, &
-                dataset%realization_dependent)
-                print *, 'here: field%work = ', field%work
 
       class default
         call PrintMsg(option,'general%salt_mole_fraction%dataset')
