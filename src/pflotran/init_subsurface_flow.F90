@@ -119,9 +119,9 @@ subroutine InitSubsurfFlowSetupRealization(simulation)
     endif
 
     ! override initial conditions of the salt mole fraction
-    if (len_trim(option%initialize_salt_mole_fraction_filename) > 1) then
+    if (len_trim(option%initialize_salt_filename) > 1) then
       call InitSubsurfSaltMoleFractionInitCond(realization, &
-                                       option%initialize_salt_mole_fraction_filename)
+                                       option%initialize_salt_filename)
     endif
 
     select case(option%iflowmode)
@@ -308,7 +308,7 @@ subroutine InitSubsurfSaltMoleFractionInitCond(realization,filename)
     ! Pressure for all modes
     offset = 2
     group_name = ''
-    dataset_name = 'salt_mole_fraction'
+    dataset_name = 'salt'
     call HDF5ReadCellIndexedRealArray(realization,field%work, &
                                       filename,group_name, &
                                       dataset_name,option%id>0)

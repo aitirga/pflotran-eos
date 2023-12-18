@@ -1646,11 +1646,11 @@ subroutine FactorySubsurfReadInput(simulation,input)
         call InputErrorMsg(input,option,'filename', &
                            'INITIALIZE_TRANSPORT_FROM_FILE')
 
-      case ('INITIALIZE_SALT_MOLE_FRACTION_FROM_FILE')
+      case ('INITIALIZE_SALT_FROM_FILE')
         call InputReadFilename(input,option, &
-                               option%initialize_salt_mole_fraction_filename)
+                               option%initialize_salt_filename)
         call InputErrorMsg(input,option,'filename', &
-                           'INITIALIZE_SALT_MOLE_FRACTION_FROM_FILE')
+                           'INITIALIZE_SALT_FROM_FILE')
 
 !....................
       case ('OBSERVATION')
