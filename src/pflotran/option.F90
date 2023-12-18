@@ -147,6 +147,7 @@ module Option_module
 
     character(len=MAXSTRINGLENGTH) :: initialize_flow_filename
     character(len=MAXSTRINGLENGTH) :: initialize_transport_filename
+    character(len=MAXSTRINGLENGTH) :: initialize_salt_mole_fraction_filename
 
     character(len=MAXSTRINGLENGTH) :: global_prefix
     character(len=MAXWORDLENGTH) :: group_prefix
@@ -565,6 +566,7 @@ subroutine OptionInitRealization(option)
 
   option%initialize_flow_filename = ''
   option%initialize_transport_filename = ''
+  option%initialize_salt_mole_fraction_filename = ''
 
   option%itable = 0
   option%co2eos = EOS_SPAN_WAGNER
