@@ -295,13 +295,6 @@ subroutine InitSubsurfSaltMoleFractionInitCond(realization,filename)
   field => realization%field
   patch => realization%patch
 
-  if (option%iflowmode /= RICHARDS_MODE .and. &
-      option%iflowmode /= RICHARDS_TS_MODE) then
-    option%io_buffer = 'Reading of flow initial conditions from HDF5 ' // &
-                       'file (' // trim(filename) // &
-                       'not currently not supported for mode: ' // &
-                       trim(option%flowmode)
-  endif
 
   cur_patch => realization%patch_list%first
   do
@@ -313,19 +306,15 @@ subroutine InitSubsurfSaltMoleFractionInitCond(realization,filename)
     call VecGetArrayF90(field%flow_xx,xx_p,ierr);CHKERRQ(ierr)
 
     ! Pressure for all modes
-    offset = 1
+    offset = 2
     group_name = ''
-    dataset_name = 'Pressure'
+    dataset_name = 'salt_mole_fraction'
     call HDF5ReadCellIndexedRealArray(realization,field%work, &
                                       filename,group_name, &
                                       dataset_name,option%id>0)
     call VecGetArrayF90(field%work,vec_p,ierr);CHKERRQ(ierr)
     do local_id=1, grid%nlmax
       if (cur_patch%imat(grid%nL2G(local_id)) <= 0) cycle
-      if (dabs(vec_p(local_id)) < 1.d-40) then
-        print *,  option%myrank, grid%nG2A(grid%nL2G(local_id)), &
-              ': Potential error - zero pressure in Initial Condition read from file.'
-      endif
       idx = (local_id-1)*option%nflowdof + offset
       xx_p(idx) = vec_p(local_id)
     enddo
