@@ -306,7 +306,7 @@ subroutine InitSubsurfSaltMoleFractionInitCond(realization,filename)
     call VecGetArrayF90(field%flow_xx,xx_p,ierr);CHKERRQ(ierr)
 
     ! Pressure for all modes
-    offset = 2
+    offset = 4
     group_name = ''
     dataset_name = 'salt'
     call HDF5ReadCellIndexedRealArray(realization,field%work, &
