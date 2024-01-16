@@ -120,8 +120,8 @@ subroutine GeneralAccumulation(gen_auxvar,global_auxvar,material_auxvar, &
   Res(1:option%nflowspec) = Res(1:option%nflowspec) * &
                             porosity * volume_over_dt * vol_frac_prim !DF: concentration in the primary continuum
 
-  Res(option%salt_id) = Res(option%salt_id) * &
-                        porosity * volume_over_dt * vol_frac_prim
+!  Res(option%salt_id) = Res(option%salt_id) * &
+!                        porosity * volume_over_dt * vol_frac_prim
 
   if (general_soluble_matrix) then
     ! Res[kmol/sec] = Res[kmol/sec] + (1-por)[m^3 solid/m^3 bulk] * den[kmol/m^3]
