@@ -120,9 +120,6 @@ subroutine GeneralAccumulation(gen_auxvar,global_auxvar,material_auxvar, &
   Res(1:option%nflowspec) = Res(1:option%nflowspec) * &
                             porosity * volume_over_dt * vol_frac_prim !DF: concentration in the primary continuum
 
-!  Res(option%salt_id) = Res(option%salt_id) * &
-!                        porosity * volume_over_dt / vol_frac_prim
-
   if (general_soluble_matrix) then
     ! Res[kmol/sec] = Res[kmol/sec] + (1-por)[m^3 solid/m^3 bulk] * den[kmol/m^3]
     !                 * vol[m^3 bulk] / dt[sec]
@@ -651,7 +648,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
           q = v_darcy(iphase) * area
           ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
           !                             density_ave[kmol phase/m^3 phase]
-          tot_mole_flux = q*density_ave
+          tot_mole_flux = q*density_ave*0
           tot_mole_flux_ddel_pressure = perm_ave_over_dist(iphase) * &
                                            mobility * area * density_ave
        else
@@ -669,7 +666,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
       Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
       Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
       if (general_salt) then
-        salt_mole_flux = tot_mole_flux * xmol(salt_comp_id) * 1000
+        salt_mole_flux = tot_mole_flux * xmol(salt_comp_id)
         Res(salt_comp_id) = Res(salt_comp_id) + salt_mole_flux
       endif
 
@@ -2831,7 +2828,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
     Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
     Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
     if (general_salt) then
-      salt_mole_flux = tot_mole_flux * xmol(salt_comp_id) * 1000
+      salt_mole_flux = tot_mole_flux * xmol(salt_comp_id)
       Res(salt_comp_id) = Res(salt_comp_id) + salt_mole_flux
     endif
     if (analytical_derivatives) then
