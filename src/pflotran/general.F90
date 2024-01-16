@@ -1503,7 +1503,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
       sec_diffusion_coefficient = patch%material_property_array(patch%imat(ghosted_id))% &
                                   ptr%multicontinuum%diff_coeff
       sec_porosity = patch%material_property_array(patch%imat(ghosted_id))% &
-                     ptr%multicontinuum%porosity
+                     ptr%multicontinuum%porosity*vol_frac_prim
       call SecondaryGenResidual(general_sec_gen_vars(local_id), &
                                 sec_porosity, &
                                 sec_diffusion_coefficient,&
@@ -2066,8 +2066,8 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
                       patch%flow_upwind_direction_bc(:,iconn), &
                       general_parameter,option, &
                       Jdn)
-      Jup = Jup
-      Jdn = Jdn
+      Jup = Jup * vol_frac_prim
+      Jdn = Jdn * vol_frac_prim
       Jdn = -Jdn
       call MatSetValuesBlockedLocal(A,1,ghosted_id-1,1,ghosted_id-1,Jdn, &
                                     ADD_VALUES,ierr);CHKERRQ(ierr)
