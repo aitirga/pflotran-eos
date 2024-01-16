@@ -648,7 +648,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
           q = v_darcy(iphase) * area
           ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
           !                             density_ave[kmol phase/m^3 phase]
-          tot_mole_flux = q*density_ave * 0.001
+          tot_mole_flux = q*density_ave * 0.01
           tot_mole_flux_ddel_pressure = perm_ave_over_dist(iphase) * &
                                            mobility * area * density_ave
        else
@@ -1112,7 +1112,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
          q = v_darcy(iphase) * area
          ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
          !                             density_ave[kmol phase/m^3 phase]
-         tot_mole_flux = q*density_ave
+         tot_mole_flux = q*density_ave * 0.01
          tot_mole_flux_ddel_pressure = perm_ave_over_dist(iphase) * &
               mobility * area * density_ave
 
@@ -2816,7 +2816,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
     q = v_darcy(iphase) * area
     ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
     !                             density_ave[kmol phase/m^3 phase]
-    tot_mole_flux = q*density_ave
+    tot_mole_flux = q*density_ave * 0.01
     tot_mole_flux_ddel_pressure = dv_darcy_ddelta_pressure * area * &
                                   density_ave
     tot_mole_flux_dmobility = dv_darcy_dmobility * area * density_ave
@@ -3176,7 +3176,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
     q = v_darcy(iphase) * area
     ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
     !                             density_ave[kmol phase/m^3 phase]
-    tot_mole_flux = q*density_ave
+    tot_mole_flux = q*density_ave * 0.01
     tot_mole_flux_ddel_pressure = dv_darcy_ddelta_pressure * area * &
                                   density_ave
     tot_mole_flux_dmobility = dv_darcy_dmobility * area * density_ave
@@ -5576,7 +5576,7 @@ subroutine GeneralNonDarcyCorrection(delta_pressure,density_kg_ave,&
   q = v_darcy * area
   ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
   !                             density_ave[kmol phase/m^3 phase]
-  tot_mole_flux = q*density_ave
+  tot_mole_flux = q*density_ave* 0.01
 
   tot_mole_flux_ddel_pressure = area*density_ave*K* &
        grad/rhog*(-expm1(-grad/I))
