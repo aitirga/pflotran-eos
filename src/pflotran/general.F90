@@ -1998,8 +1998,8 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
                      patch%flow_upwind_direction(:,iconn), &
                      general_parameter,option,&
                      Jup,Jdn)
-      Jup = Jup
-      Jdn = Jdn
+      Jup = Jup * vol_frac_prim
+      Jdn = Jdn * vol_frac_prim
       if (local_id_up > 0) then
         call MatSetValuesBlockedLocal(A,1,ghosted_id_up-1,1,ghosted_id_up-1, &
                                       Jup,ADD_VALUES,ierr);CHKERRQ(ierr)
@@ -2066,8 +2066,8 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
                       patch%flow_upwind_direction_bc(:,iconn), &
                       general_parameter,option, &
                       Jdn)
-      Jup = Jup * vol_frac_prim
-      Jdn = Jdn * vol_frac_prim
+      Jup = Jup
+      Jdn = Jdn
       Jdn = -Jdn
       call MatSetValuesBlockedLocal(A,1,ghosted_id-1,1,ghosted_id-1,Jdn, &
                                     ADD_VALUES,ierr);CHKERRQ(ierr)
