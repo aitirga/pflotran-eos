@@ -1556,19 +1556,19 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
 
       patch%internal_velocities(:,sum_connection) = v_darcy
       if (associated(patch%internal_flow_fluxes)) then
-        patch%internal_flow_fluxes(:,sum_connection) = Res(:)
+        patch%internal_flow_fluxes(:,sum_connection) = Res(:)*vol_frac_prim
       endif
 
       if (local_id_up > 0) then
         local_end = local_id_up * option%nflowdof
         local_start = local_end - option%nflowdof + 1
-        r_p(local_start:local_end) = r_p(local_start:local_end) + Res(:) * vol_frac_prim
+        r_p(local_start:local_end) = r_p(local_start:local_end) + Res(:)
       endif
 
       if (local_id_dn > 0) then
         local_end = local_id_dn * option%nflowdof
         local_start = local_end - option%nflowdof + 1
-        r_p(local_start:local_end) = r_p(local_start:local_end) - Res(:) * vol_frac_prim
+        r_p(local_start:local_end) = r_p(local_start:local_end) - Res(:)
       endif
     enddo
 
