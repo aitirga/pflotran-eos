@@ -129,7 +129,9 @@ subroutine GeneralAccumulation(gen_auxvar,global_auxvar,material_auxvar, &
     !
   endif
 
-  Res(option%salt_id) = 0.0
+!  Res(option%salt_id) = Res(option%salt_id) + (1.d0 - porosity) * &
+!                        PRECIPITATE_DENSITY * &
+!                        volume_over_dt
 
   do iphase = 1, option%nphase
     ! Res[MJ/m^3 void] = sat[m^3 phase/m^3 void] *
