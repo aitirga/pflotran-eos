@@ -123,7 +123,7 @@ subroutine GeneralAccumulation(gen_auxvar,global_auxvar,material_auxvar, &
   if (general_soluble_matrix) then
     ! Res[kmol/sec] = Res[kmol/sec] + (1-por)[m^3 solid/m^3 bulk] * den[kmol/m^3]
     !                 * vol[m^3 bulk] / dt[sec]
-    Res(option%salt_id) = Res(option%salt_id) + (1.d0 - porosity) * &
+    Res(option%salt_id) = Res(option%salt_id) * vol_frac_prim + (1.d0 - porosity) * &
                             PRECIPITATE_DENSITY * &
                             volume_over_dt
     !
@@ -667,7 +667,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
       Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
       if (general_salt) then
         salt_mole_flux = tot_mole_flux * xmol(salt_comp_id)
-        Res(salt_comp_id) = Res(salt_comp_id)*100 + salt_mole_flux
+        Res(salt_comp_id) = Res(salt_comp_id) + salt_mole_flux
       endif
 
       if (analytical_derivatives) then
@@ -2829,7 +2829,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
     Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
     if (general_salt) then
       salt_mole_flux = tot_mole_flux * xmol(salt_comp_id)
-      Res(salt_comp_id) = Res(salt_comp_id)*100 + salt_mole_flux
+      Res(salt_comp_id) = Res(salt_comp_id) + salt_mole_flux
     endif
     if (analytical_derivatives) then
       Jl = 0.d0
