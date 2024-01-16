@@ -1503,13 +1503,13 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
       sec_diffusion_coefficient = patch%material_property_array(patch%imat(ghosted_id))% &
                                   ptr%multicontinuum%diff_coeff
       sec_porosity = patch%material_property_array(patch%imat(ghosted_id))% &
-                     ptr%multicontinuum%porosity*vol_frac_prim
+                     ptr%multicontinuum%porosity
       call SecondaryGenResidual(general_sec_gen_vars(local_id), &
                                 sec_porosity, &
                                 sec_diffusion_coefficient,&
                                 gen_auxvars(ZERO_INTEGER,ghosted_id)%xmol(3,1), &
                                 option,res_sec_gen)
-      r_p(iend-1) = r_p(iend-1) - res_sec_gen*material_auxvars(ghosted_id)%volume*vol_frac_prim
+      r_p(iend-1) = r_p(iend-1) - res_sec_gen*material_auxvars(ghosted_id)%volume/vol_frac_prim
 
     enddo
   endif
