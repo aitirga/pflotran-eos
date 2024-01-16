@@ -1554,7 +1554,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                        (local_id_up == general_debug_cell_id .or. &
                         local_id_dn == general_debug_cell_id))
 
-      patch%internal_velocities(:,sum_connection) = v_darcy*vol_frac_prim
+      patch%internal_velocities(:,sum_connection) = v_darcy
       if (associated(patch%internal_flow_fluxes)) then
         patch%internal_flow_fluxes(:,sum_connection) = Res(:)*vol_frac_prim
       endif
@@ -1617,7 +1617,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                      update_upwind_direction, &
                      count_upwind_direction_flip, &
                      local_id == general_debug_cell_id)
-      patch%boundary_velocities(:,sum_connection) = v_darcy*vol_frac_prim
+      patch%boundary_velocities(:,sum_connection) = v_darcy
       if (associated(patch%boundary_flow_fluxes)) then
         patch%boundary_flow_fluxes(:,sum_connection) = Res(:)
       endif
