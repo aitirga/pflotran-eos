@@ -666,8 +666,8 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
       Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
       Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
       if (general_salt) then
-        salt_mole_flux = tot_mole_flux * xmol(salt_comp_id) * 1E5
-        Res(salt_comp_id) = Res(salt_comp_id) + salt_mole_flux
+        salt_mole_flux = tot_mole_flux * xmol(salt_comp_id)
+        Res(salt_comp_id) = Res(salt_comp_id)*100 + salt_mole_flux
       endif
 
       if (analytical_derivatives) then
@@ -2828,8 +2828,8 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
     Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
     Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
     if (general_salt) then
-      salt_mole_flux = tot_mole_flux * xmol(salt_comp_id) * 1E5
-      Res(salt_comp_id) = Res(salt_comp_id) + salt_mole_flux
+      salt_mole_flux = tot_mole_flux * xmol(salt_comp_id)
+      Res(salt_comp_id) = Res(salt_comp_id)*100 + salt_mole_flux
     endif
     if (analytical_derivatives) then
       Jl = 0.d0
