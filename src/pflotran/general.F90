@@ -1252,7 +1252,7 @@ subroutine GeneralUpdateFixedAccum(realization)
     option%iflag = GENERAL_UPDATE_FOR_FIXED_ACCUM
 
     if (option%use_sc) then
-      vol_frac_prim = material_auxvars(ghosted_id)%secondary_prop%epsilon
+      vol_frac_prim = 1.d0
     else
       vol_frac_prim = 1.d0
     endif
@@ -1470,7 +1470,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
     local_end = local_id * option%nflowdof
     local_start = local_end - option%nflowdof + 1
     if (option%use_sc) then
-      vol_frac_prim = material_auxvars(ghosted_id)%secondary_prop%epsilon
+      vol_frac_prim = 1.0
     else
       vol_frac_prim = 1.d0
     endif
@@ -1922,7 +1922,7 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
     imat = patch%imat(ghosted_id)
     if (imat <= 0) cycle
     if (option%use_sc) then
-      vol_frac_prim = sec_gen_vars(local_id)%epsilon
+      vol_frac_prim = 1.0
     else
       vol_frac_prim = 1.d0
     endif
