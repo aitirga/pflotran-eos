@@ -648,7 +648,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
           q = v_darcy(iphase) * area
           ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
           !                             density_ave[kmol phase/m^3 phase]
-          tot_mole_flux = q*density_ave * 1000
+          tot_mole_flux = q*density_ave * 0.001
           tot_mole_flux_ddel_pressure = perm_ave_over_dist(iphase) * &
                                            mobility * area * density_ave
        else
