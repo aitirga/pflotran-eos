@@ -1252,7 +1252,7 @@ subroutine GeneralUpdateFixedAccum(realization)
     option%iflag = GENERAL_UPDATE_FOR_FIXED_ACCUM
 
     if (option%use_sc) then
-      vol_frac_prim = 1.d0
+      vol_frac_prim = material_auxvars(ghosted_id)%secondary_prop%epsilon
     else
       vol_frac_prim = 1.d0
     endif
@@ -1470,7 +1470,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
     local_end = local_id * option%nflowdof
     local_start = local_end - option%nflowdof + 1
     if (option%use_sc) then
-      vol_frac_prim = 1.0
+      vol_frac_prim = material_auxvars(ghosted_id)%secondary_prop%epsilon
     else
       vol_frac_prim = 1.d0
     endif
@@ -1554,7 +1554,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                        (local_id_up == general_debug_cell_id .or. &
                         local_id_dn == general_debug_cell_id))
 
-      patch%internal_velocities(:,sum_connection) = v_darcy
+      patch%internal_velocities(:,sum_connection) = v_darcy*vol_frac_prim
       if (associated(patch%internal_flow_fluxes)) then
         patch%internal_flow_fluxes(:,sum_connection) = Res(:)*vol_frac_prim
       endif
@@ -1617,7 +1617,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                      update_upwind_direction, &
                      count_upwind_direction_flip, &
                      local_id == general_debug_cell_id)
-      patch%boundary_velocities(:,sum_connection) = v_darcy
+      patch%boundary_velocities(:,sum_connection) = v_darcy*vol_frac_prim
       if (associated(patch%boundary_flow_fluxes)) then
         patch%boundary_flow_fluxes(:,sum_connection) = Res(:)
       endif
@@ -1922,7 +1922,7 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
     imat = patch%imat(ghosted_id)
     if (imat <= 0) cycle
     if (option%use_sc) then
-      vol_frac_prim = 1.0
+      vol_frac_prim = sec_gen_vars(local_id)%epsilon
     else
       vol_frac_prim = 1.d0
     endif
