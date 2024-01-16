@@ -1684,7 +1684,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                           PETSC_FALSE, &
                           local_id == general_debug_cell_id)
 
-      r_p(local_start:local_end) =  r_p(local_start:local_end) - Res(:)
+      r_p(local_start:local_end) =  r_p(local_start:local_end) - Res(:)*vol_frac_prim
 
       if (associated(patch%ss_flow_vol_fluxes)) then
         patch%ss_flow_vol_fluxes(:,sum_connection) = ss_flow_vol_flux
@@ -1945,7 +1945,7 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
                                   option,jac_sec_gen)
         Jup(option%nflowdof,3) = &
                                  Jup(option%nflowdof,3) - &
-                                 jac_sec_gen*material_auxvars(ghosted_id)%volume*vol_frac_prim
+                                 jac_sec_gen*material_auxvars(ghosted_id)%volume
       endif
     endif
     call MatSetValuesBlockedLocal(A,1,ghosted_id-1,1,ghosted_id-1,Jup, &
