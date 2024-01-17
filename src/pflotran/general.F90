@@ -1553,9 +1553,9 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                        (local_id_up == general_debug_cell_id .or. &
                         local_id_dn == general_debug_cell_id))
 
-      patch%internal_velocities(:,sum_connection) = v_darcy
+      patch%internal_velocities(:,sum_connection) = v_darcy !* vol_frac_prim
       if (associated(patch%internal_flow_fluxes)) then
-        patch%internal_flow_fluxes(:,sum_connection) = Res(:)
+        patch%internal_flow_fluxes(:,sum_connection) = Res(:) !* vol_frac_prim
       endif
 
       if (local_id_up > 0) then
@@ -1616,9 +1616,9 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                      update_upwind_direction, &
                      count_upwind_direction_flip, &
                      local_id == general_debug_cell_id)
-      patch%boundary_velocities(:,sum_connection) = v_darcy
+      patch%boundary_velocities(:,sum_connection) = v_darcy !* vol_frac_prim
       if (associated(patch%boundary_flow_fluxes)) then
-        patch%boundary_flow_fluxes(:,sum_connection) = Res(:)
+        patch%boundary_flow_fluxes(:,sum_connection) = Res(:) !* vol_frac_prim
       endif
       if (option%compute_mass_balance_new) then
         ! contribution to boundary
