@@ -157,7 +157,7 @@ subroutine GeneralAccumulation(gen_auxvar,global_auxvar,material_auxvar, &
                     soil_heat_capacity * gen_auxvar%temp) * volume_over_dt
 
   if (analytical_derivatives) then
-    Jac = 100000.d0
+    Jac = 0.d0
     select case(global_auxvar%istate)
       case(LIQUID_STATE)
         ! satl = 1
@@ -2792,7 +2792,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
       !     if liquid flux is set to 0, SALT_MOLE_FRACTION becomes a dirichlet BC
       !     if liquid flux is non-zero, SALT_MOLE_FRACTION becomes mole fraction of flux fluid
       if (dabs(auxvars(idof)) > floweps) then
-        v_darcy(iphase) = auxvars(idof)
+        v_darcy(iphase) = auxvars(idof) * 100
         if (general_salt) then
           xmol(option%salt_id) = auxvars(GENERAL_LIQUID_STATE_S_MOLE_DOF)
           xmol(iphase) = 1.d0 - xmol(option%salt_id)
