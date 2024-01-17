@@ -2792,14 +2792,14 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
       !     if liquid flux is set to 0, SALT_MOLE_FRACTION becomes a dirichlet BC
       !     if liquid flux is non-zero, SALT_MOLE_FRACTION becomes mole fraction of flux fluid
       if (dabs(auxvars(idof)) > floweps) then
-        v_darcy(iphase) = auxvars(idof) * 100
+        v_darcy(iphase) = auxvars(idof)
         if (general_salt) then
           xmol(option%salt_id) = auxvars(GENERAL_LIQUID_STATE_S_MOLE_DOF)
           xmol(iphase) = 1.d0 - xmol(option%salt_id)
         endif
         if (v_darcy(iphase) > 0.d0) then
           density_ave = gen_auxvar_up%den(iphase)
-          uH = gen_auxvar_up%H(iphase)
+          uH = gen_auxvar_up%H(iphase) * 100
         else
           dn_scale = 1.d0
           density_ave = gen_auxvar_dn%den(iphase)
