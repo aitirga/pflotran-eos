@@ -595,7 +595,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
                                            ddensity_kg_ave_dden_kg_up, &
                                            ddensity_kg_ave_dden_kg_dn)
 
-    gravity_term = density_kg_ave * dist_gravity
+    gravity_term = density_kg_ave * dist_gravity * 0.0
     delta_pressure = gen_auxvar_up%pres(iphase) - &
                      gen_auxvar_dn%pres(iphase) + &
                      gravity_term

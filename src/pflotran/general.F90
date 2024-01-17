@@ -1510,7 +1510,6 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                                 gen_auxvars(ZERO_INTEGER,ghosted_id)%xmol(3,1), &
                                 option,res_sec_gen)
       r_p(iend-1) = r_p(iend-1) - res_sec_gen*material_auxvars(ghosted_id)%volume*vol_frac_prim
-
     enddo
   endif
   ! Interior Flux Terms -----------------------------------
