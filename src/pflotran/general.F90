@@ -1509,7 +1509,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                                 sec_diffusion_coefficient,&
                                 gen_auxvars(ZERO_INTEGER,ghosted_id)%xmol(3,1), &
                                 option,res_sec_gen)
-      r_p(iend-1) = r_p(iend-1) - res_sec_gen*material_auxvars(ghosted_id)%volume/vol_frac_prim
+      r_p(iend-1) = r_p(iend-1) - res_sec_gen*material_auxvars(ghosted_id)%volume*vol_frac_prim
 
     enddo
   endif
@@ -1554,7 +1554,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                        (local_id_up == general_debug_cell_id .or. &
                         local_id_dn == general_debug_cell_id))
 
-      patch%internal_velocities(:,sum_connection) = v_darcy*vol_frac_prim
+      patch%internal_velocities(:,sum_connection) = v_darcy
       if (associated(patch%internal_flow_fluxes)) then
         patch%internal_flow_fluxes(:,sum_connection) = Res(:)*vol_frac_prim
       endif
@@ -1617,7 +1617,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                      update_upwind_direction, &
                      count_upwind_direction_flip, &
                      local_id == general_debug_cell_id)
-      patch%boundary_velocities(:,sum_connection) = v_darcy * vol_frac_prim
+      patch%boundary_velocities(:,sum_connection) = v_darcy
       if (associated(patch%boundary_flow_fluxes)) then
         patch%boundary_flow_fluxes(:,sum_connection) = Res(:)
       endif
