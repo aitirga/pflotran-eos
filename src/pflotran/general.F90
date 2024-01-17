@@ -1618,7 +1618,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                      local_id == general_debug_cell_id)
       patch%boundary_velocities(:,sum_connection) = v_darcy * vol_frac_prim
       if (associated(patch%boundary_flow_fluxes)) then
-        patch%boundary_flow_fluxes(:,sum_connection) = Res(:)
+        patch%boundary_flow_fluxes(:,sum_connection) = Res(:) * vol_frac_prim
       endif
       if (option%compute_mass_balance_new) then
         ! contribution to boundary
