@@ -551,12 +551,10 @@ subroutine TFluxCoef(rt_parameter, &
     ! units = (m^3 water/m^2 bulk/sec)
     if (q > 0.d0) then
       coef_up(:) =  tran_coefs_over_dist(:,iphase)+q
-      coef_up(2) = coef_up(2)/0.01
       coef_dn(:) = -tran_coefs_over_dist(:,iphase)
     else
       coef_up(:) =  tran_coefs_over_dist(:,iphase)
       coef_dn(:) = -tran_coefs_over_dist(:,iphase)+q
-      coef_dn(2) = coef_up(2)/0.01
     endif
 
     ! units = (m^3 water/m^2 bulk/sec)*(m^2 bulk)*(1000 L water/m^3 water)
