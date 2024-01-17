@@ -2799,7 +2799,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
         endif
         if (v_darcy(iphase) > 0.d0) then
           density_ave = gen_auxvar_up%den(iphase)
-          uH = gen_auxvar_up%H(iphase) * 100
+          uH = gen_auxvar_up%H(iphase) ! Something changed
         else
           dn_scale = 1.d0
           density_ave = gen_auxvar_dn%den(iphase)
