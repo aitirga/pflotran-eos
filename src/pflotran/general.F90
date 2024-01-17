@@ -1481,7 +1481,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                              option,Res,Jac_dummy, &
                              general_analytical_derivatives, &
                              local_id == general_debug_cell_id,vol_frac_prim)
-    r_p(local_start:local_end) =  r_p(local_start:local_end) + Res(:) * vol_frac_prim
+    r_p(local_start:local_end) =  r_p(local_start:local_end) + Res(:)
     accum_p2(local_start:local_end) = Res(:)
   enddo
   call VecRestoreArrayF90(field%flow_accum2, accum_p2, ierr);CHKERRQ(ierr)
@@ -1944,7 +1944,7 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
                                   option,jac_sec_gen)
         Jup(option%nflowdof,3) = &
                                  Jup(option%nflowdof,3) - &
-                                 jac_sec_gen*material_auxvars(ghosted_id)%volume*vol_frac_prim
+                                 jac_sec_gen*material_auxvars(ghosted_id)%volume
       endif
     endif
     call MatSetValuesBlockedLocal(A,1,ghosted_id-1,1,ghosted_id-1,Jup, &
