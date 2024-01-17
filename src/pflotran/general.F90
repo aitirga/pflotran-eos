@@ -1509,7 +1509,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                                 sec_diffusion_coefficient,&
                                 gen_auxvars(ZERO_INTEGER,ghosted_id)%xmol(3,1), &
                                 option,res_sec_gen)
-      r_p(iend-1) = r_p(iend-1) - res_sec_gen*material_auxvars(ghosted_id)%volume*vol_frac_prim !^si
+      r_p(iend-1) = r_p(iend-1) - res_sec_gen*material_auxvars(ghosted_id)%volume*vol_frac_prim
     enddo
   endif
   ! Interior Flux Terms -----------------------------------
@@ -1553,21 +1553,21 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                        (local_id_up == general_debug_cell_id .or. &
                         local_id_dn == general_debug_cell_id))
 
-      patch%internal_velocities(:,sum_connection) = v_darcy !* vol_frac_prim
+      patch%internal_velocities(:,sum_connection) = v_darcy
       if (associated(patch%internal_flow_fluxes)) then
-        patch%internal_flow_fluxes(:,sum_connection) = Res(:) !* vol_frac_prim
+        patch%internal_flow_fluxes(:,sum_connection) = Res(:)
       endif
 
       if (local_id_up > 0) then
         local_end = local_id_up * option%nflowdof
         local_start = local_end - option%nflowdof + 1
-        r_p(local_start:local_end) = r_p(local_start:local_end) + Res(:) !* vol_frac_prim
+        r_p(local_start:local_end) = r_p(local_start:local_end) + Res(:) * vol_frac_prim
       endif
 
       if (local_id_dn > 0) then
         local_end = local_id_dn * option%nflowdof
         local_start = local_end - option%nflowdof + 1
-        r_p(local_start:local_end) = r_p(local_start:local_end) - Res(:) !* vol_frac_prim
+        r_p(local_start:local_end) = r_p(local_start:local_end) - Res(:) * vol_frac_prim
       endif
     enddo
 
@@ -1616,9 +1616,9 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                      update_upwind_direction, &
                      count_upwind_direction_flip, &
                      local_id == general_debug_cell_id)
-      patch%boundary_velocities(:,sum_connection) = v_darcy !* vol_frac_prim
+      patch%boundary_velocities(:,sum_connection) = v_darcy
       if (associated(patch%boundary_flow_fluxes)) then
-        patch%boundary_flow_fluxes(:,sum_connection) = Res(:) !* vol_frac_prim
+        patch%boundary_flow_fluxes(:,sum_connection) = Res(:)
       endif
       if (option%compute_mass_balance_new) then
         ! contribution to boundary
@@ -1635,7 +1635,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
 
       local_end = local_id * option%nflowdof
       local_start = local_end - option%nflowdof + 1
-      r_p(local_start:local_end)= r_p(local_start:local_end) - Res(:)!*vol_frac_prim
+      r_p(local_start:local_end)= r_p(local_start:local_end) - Res(:)*vol_frac_prim
 !      r_p(local_end-1)= r_p(local_end-1) - Res()
 
     enddo
@@ -1684,7 +1684,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                           PETSC_FALSE, &
                           local_id == general_debug_cell_id)
 
-      r_p(local_start:local_end) =  r_p(local_start:local_end) - Res(:)!*vol_frac_prim
+      r_p(local_start:local_end) =  r_p(local_start:local_end) - Res(:)*vol_frac_prim
 
       if (associated(patch%ss_flow_vol_fluxes)) then
         patch%ss_flow_vol_fluxes(:,sum_connection) = ss_flow_vol_flux
@@ -1945,7 +1945,7 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
                                   option,jac_sec_gen)
         Jup(option%nflowdof,3) = &
                                  Jup(option%nflowdof,3) - &
-                                 jac_sec_gen*material_auxvars(ghosted_id)%volume!*vol_frac_prim ^duda
+                                 jac_sec_gen*material_auxvars(ghosted_id)%volume*vol_frac_prim
       endif
     endif
     call MatSetValuesBlockedLocal(A,1,ghosted_id-1,1,ghosted_id-1,Jup, &
@@ -1998,8 +1998,8 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
                      patch%flow_upwind_direction(:,iconn), &
                      general_parameter,option,&
                      Jup,Jdn)
-      Jup = Jup !* vol_frac_prim
-      Jdn = Jdn !* vol_frac_prim
+      Jup = Jup * vol_frac_prim
+      Jdn = Jdn * vol_frac_prim
       if (local_id_up > 0) then
         call MatSetValuesBlockedLocal(A,1,ghosted_id_up-1,1,ghosted_id_up-1, &
                                       Jup,ADD_VALUES,ierr);CHKERRQ(ierr)
@@ -2066,8 +2066,8 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
                       patch%flow_upwind_direction_bc(:,iconn), &
                       general_parameter,option, &
                       Jdn)
-      Jup = Jup !* vol_frac_prim
-      Jdn = Jdn !* vol_frac_prim
+      Jup = Jup * vol_frac_prim
+      Jdn = Jdn * vol_frac_prim
       Jdn = -Jdn
       call MatSetValuesBlockedLocal(A,1,ghosted_id-1,1,ghosted_id-1,Jdn, &
                                     ADD_VALUES,ierr);CHKERRQ(ierr)
@@ -2118,8 +2118,8 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
                           patch%cc_id(ghosted_id))%ptr, &
                         grid%nG2A(ghosted_id),material_auxvars(ghosted_id), &
                         scale,Jup)
-      Jup = Jup !* vol_frac_prim
-      Jdn = Jdn !* vol_frac_prim
+      Jup = Jup * vol_frac_prim
+      Jdn = Jdn * vol_frac_prim
       call MatSetValuesBlockedLocal(A,1,ghosted_id-1,1,ghosted_id-1,Jup, &
                                     ADD_VALUES,ierr);CHKERRQ(ierr)
 
