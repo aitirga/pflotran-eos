@@ -661,8 +661,8 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
 
       ! comp_mole_flux[kmol comp/sec] = tot_mole_flux[kmol phase/sec] *
       !                                 xmol[kmol comp/kmol phase]
-      wat_mole_flux = tot_mole_flux * xmol(wat_comp_id)
-      air_mole_flux = tot_mole_flux * xmol(air_comp_id)
+      wat_mole_flux = tot_mole_flux * xmol(wat_comp_id) * 0.0
+      air_mole_flux = tot_mole_flux * xmol(air_comp_id) * 0.0
       Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
       Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
       Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
@@ -670,7 +670,6 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
         salt_mole_flux = tot_mole_flux * xmol(salt_comp_id)
         Res(salt_comp_id) = Res(salt_comp_id) + salt_mole_flux
       endif
-      Res(salt_comp_id) = 0.0
 
       if (analytical_derivatives) then
         Jlup = 0.d0
@@ -2824,8 +2823,8 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
     tot_mole_flux_dmobility = dv_darcy_dmobility * area * density_ave
     ! comp_mole_flux[kmol comp/sec] = tot_mole_flux[kmol phase/sec] *
     !                                 xmol[kmol comp/kmol phase]
-    wat_mole_flux = tot_mole_flux * xmol(wat_comp_id)
-    air_mole_flux = tot_mole_flux * xmol(air_comp_id)
+    wat_mole_flux = tot_mole_flux * xmol(wat_comp_id) * 0.0
+    air_mole_flux = tot_mole_flux * xmol(air_comp_id) * 0.0
     Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
     Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
     Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
@@ -2833,7 +2832,6 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
       salt_mole_flux = tot_mole_flux * xmol(salt_comp_id)
       Res(salt_comp_id) = Res(salt_comp_id) + salt_mole_flux
     endif
-    Res(salt_comp_id) = 0.0
     if (analytical_derivatives) then
       Jl = 0.d0
       select case(global_auxvar_dn%istate)
