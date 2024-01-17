@@ -2833,6 +2833,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
       salt_mole_flux = tot_mole_flux * xmol(salt_comp_id)
       Res(salt_comp_id) = Res(salt_comp_id) + salt_mole_flux
     endif
+    Res(salt_comp_id) = 0.0
     if (analytical_derivatives) then
       Jl = 0.d0
       select case(global_auxvar_dn%istate)
