@@ -407,7 +407,7 @@ subroutine GeneralAccumulation(gen_auxvar,global_auxvar,material_auxvar, &
             material_auxvar%soil_particle_density * &
             soil_heat_capacity
     end select
-    Jac = Jac * volume_over_dt * 0.0
+    Jac = Jac * volume_over_dt
   endif
 
 end subroutine GeneralAccumulation
@@ -646,7 +646,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
           v_darcy(iphase) = perm_ave_over_dist(iphase) * mobility * delta_pressure
 
           ! q[m^3 phase/sec] = v_darcy[m/sec] * area[m^2]
-          q = v_darcy(iphase) * area
+          q = v_darcy(iphase) * area * 0.0
           ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
           !                             density_ave[kmol phase/m^3 phase]
           tot_mole_flux = q*density_ave
