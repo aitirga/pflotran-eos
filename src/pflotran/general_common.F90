@@ -117,7 +117,8 @@ subroutine GeneralAccumulation(gen_auxvar,global_auxvar,material_auxvar, &
   ! scale by porosity * volume / dt
   ! Res[kmol/sec] = Res[kmol/m^3 void] * por[m^3 void/m^3 bulk] *
   !                 vol[m^3 bulk] / dt[sec]
-  Res(1:option%nflowspec) = 0.0 !DF: concentration in the primary continuum
+  Res(1:option%nflowspec) = Res(1:option%nflowspec) * &
+                            porosity * volume_over_dt * vol_frac_prim !DF: concentration in the primary continuum
 
   if (general_soluble_matrix) then
     ! Res[kmol/sec] = Res[kmol/sec] + (1-por)[m^3 solid/m^3 bulk] * den[kmol/m^3]
@@ -406,7 +407,7 @@ subroutine GeneralAccumulation(gen_auxvar,global_auxvar,material_auxvar, &
             material_auxvar%soil_particle_density * &
             soil_heat_capacity
     end select
-    Jac = Jac * volume_over_dt
+    Jac = Jac * volume_over_dt * 0.0
   endif
 
 end subroutine GeneralAccumulation
