@@ -1481,7 +1481,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                              option,Res,Jac_dummy, &
                              general_analytical_derivatives, &
                              local_id == general_debug_cell_id,vol_frac_prim)
-    r_p(local_start:local_end) =  r_p(local_start:local_end) + Res(:) * vol_frac_prim
+    r_p(local_start:local_end) =  r_p(local_start:local_end) + Res(:)
     accum_p2(local_start:local_end) = Res(:)
   enddo
   call VecRestoreArrayF90(field%flow_accum2, accum_p2, ierr);CHKERRQ(ierr)
