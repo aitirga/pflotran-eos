@@ -2849,7 +2849,7 @@ subroutine SecondaryGenJacobian(sec_gen_vars,sec_porosity, &
   ! Calculate the jacobian term
   jac_gen = area_fm * 55.5 * 1.d0 * sec_porosity * salt_diffusion_coeff(1) * &
             (Dsalt_x_N_Dsalt_x_prim - 1.d0)/ &
-             dm_plus(ngcells) * 0.000000001
+             dm_plus(ngcells)
 
 
 end subroutine SecondaryGenJacobian
