@@ -599,7 +599,6 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
     delta_pressure = gen_auxvar_up%pres(iphase) - &
                      gen_auxvar_dn%pres(iphase) + &
                      gravity_term
-    delta_pressure = delta_pressure * 1000
     if (analytical_derivatives) then
       ddelta_pressure_dpup = 1.d0 + dist_gravity * &
                              ddensity_kg_ave_dden_kg_up * &
@@ -1627,7 +1626,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
     Res(wat_comp_id) = Res(wat_comp_id) - tot_mole_flux
     Res(air_comp_id) = Res(air_comp_id) + tot_mole_flux
     if (general_salt) then
-      tot_mole_flux1 = dtot_mole_flux_ddeltaS * delta_xsmol
+      tot_mole_flux1 = dtot_mole_flux_ddeltaS * delta_xsmol * 0.0
       dtot_mole_flux_dstpd1 = tot_mole_flux1 / stpd_ave_over_dist
       dtot_mole_flux_ddenave1 = tot_mole_flux1 / density_ave
       Res(wat_comp_id) = Res(wat_comp_id) - tot_mole_flux1
