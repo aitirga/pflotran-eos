@@ -666,11 +666,11 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
       Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
       Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
       Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
-      Res(salt_comp_id) = 0.0
       if (general_salt) then
         salt_mole_flux = tot_mole_flux * xmol(salt_comp_id)
         Res(salt_comp_id) = Res(salt_comp_id) + salt_mole_flux
       endif
+      Res(salt_comp_id) = 0.0
 
       if (analytical_derivatives) then
         Jlup = 0.d0
