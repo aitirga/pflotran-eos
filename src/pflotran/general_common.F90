@@ -661,8 +661,8 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
 
       ! comp_mole_flux[kmol comp/sec] = tot_mole_flux[kmol phase/sec] *
       !                                 xmol[kmol comp/kmol phase]
-      wat_mole_flux = tot_mole_flux * xmol(wat_comp_id) * 0.0
-      air_mole_flux = tot_mole_flux * xmol(air_comp_id) * 0.0
+      wat_mole_flux = tot_mole_flux * xmol(wat_comp_id) * 100
+      air_mole_flux = tot_mole_flux * xmol(air_comp_id)
       Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
       Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
       Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
@@ -1126,7 +1126,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
 
       ! comp_mole_flux[kmol comp/sec] = tot_mole_flux[kmol phase/sec] *
       !                                 xmol[kmol comp/kmol phase]
-      wat_mole_flux = tot_mole_flux * xmol(wat_comp_id)
+      wat_mole_flux = tot_mole_flux * xmol(wat_comp_id) * 100
       air_mole_flux = tot_mole_flux * xmol(air_comp_id)
       Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
       Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
@@ -2823,8 +2823,8 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
     tot_mole_flux_dmobility = dv_darcy_dmobility * area * density_ave
     ! comp_mole_flux[kmol comp/sec] = tot_mole_flux[kmol phase/sec] *
     !                                 xmol[kmol comp/kmol phase]
-    wat_mole_flux = tot_mole_flux * xmol(wat_comp_id) * 0.0
-    air_mole_flux = tot_mole_flux * xmol(air_comp_id) * 0.0
+    wat_mole_flux = tot_mole_flux * xmol(wat_comp_id)
+    air_mole_flux = tot_mole_flux * xmol(air_comp_id)
     Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
     Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
     Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
