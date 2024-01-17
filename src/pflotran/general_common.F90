@@ -646,7 +646,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
           v_darcy(iphase) = perm_ave_over_dist(iphase) * mobility * delta_pressure
 
           ! q[m^3 phase/sec] = v_darcy[m/sec] * area[m^2]
-          q = v_darcy(iphase) * area * 0.0
+          q = v_darcy(iphase) * area
           ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
           !                             density_ave[kmol phase/m^3 phase]
           tot_mole_flux = q*density_ave
@@ -666,6 +666,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
       Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
       Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
       Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
+      Res(salt_comp_id) = 0.0
       if (general_salt) then
         salt_mole_flux = tot_mole_flux * xmol(salt_comp_id)
         Res(salt_comp_id) = Res(salt_comp_id) + salt_mole_flux
