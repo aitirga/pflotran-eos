@@ -157,7 +157,7 @@ subroutine GeneralAccumulation(gen_auxvar,global_auxvar,material_auxvar, &
                     soil_heat_capacity * gen_auxvar%temp) * volume_over_dt
 
   if (analytical_derivatives) then
-    Jac = 0.d0
+    Jac = 100000.d0
     select case(global_auxvar%istate)
       case(LIQUID_STATE)
         ! satl = 1
@@ -661,7 +661,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
 
       ! comp_mole_flux[kmol comp/sec] = tot_mole_flux[kmol phase/sec] *
       !                                 xmol[kmol comp/kmol phase]
-      wat_mole_flux = tot_mole_flux * xmol(wat_comp_id) * 10.0
+      wat_mole_flux = tot_mole_flux * xmol(wat_comp_id)
       air_mole_flux = tot_mole_flux * xmol(air_comp_id)
       Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
       Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
@@ -1126,7 +1126,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
 
       ! comp_mole_flux[kmol comp/sec] = tot_mole_flux[kmol phase/sec] *
       !                                 xmol[kmol comp/kmol phase]
-      wat_mole_flux = tot_mole_flux * xmol(wat_comp_id) * 10.0
+      wat_mole_flux = tot_mole_flux * xmol(wat_comp_id)
       air_mole_flux = tot_mole_flux * xmol(air_comp_id)
       Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
       Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
@@ -2823,7 +2823,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
     tot_mole_flux_dmobility = dv_darcy_dmobility * area * density_ave
     ! comp_mole_flux[kmol comp/sec] = tot_mole_flux[kmol phase/sec] *
     !                                 xmol[kmol comp/kmol phase]
-    wat_mole_flux = tot_mole_flux * xmol(wat_comp_id) * 10.0
+    wat_mole_flux = tot_mole_flux * xmol(wat_comp_id)
     air_mole_flux = tot_mole_flux * xmol(air_comp_id)
     Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
     Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
@@ -3183,7 +3183,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
     tot_mole_flux_dmobility = dv_darcy_dmobility * area * density_ave
     ! comp_mole_flux[kmol comp/sec] = tot_mole_flux[kmol phase/sec] *
     !                                 xmol[kmol comp/kmol phase]
-    wat_mole_flux = tot_mole_flux * xmol(wat_comp_id) * 10.0
+    wat_mole_flux = tot_mole_flux * xmol(wat_comp_id)
     air_mole_flux = tot_mole_flux * xmol(air_comp_id)
     Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
     Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
