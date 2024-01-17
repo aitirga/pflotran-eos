@@ -2844,12 +2844,12 @@ subroutine SecondaryGenJacobian(sec_gen_vars,sec_porosity, &
   ! We need the salt mole fraction (salt_x) derivative at the outer-most node (closest
   ! to primary node)
   Dsalt_x_N_Dsalt_x_prim = 1.d0/coeff_diag(ngcells)*alpha*area(ngcells)/ &
-                       (dm_plus(ngcells)*vol(ngcells)) * 0.0001
+                       (dm_plus(ngcells)*vol(ngcells))
 
   ! Calculate the jacobian term
   jac_gen = area_fm * 55.5 * 1.d0 * sec_porosity * salt_diffusion_coeff(1) * &
             (Dsalt_x_N_Dsalt_x_prim - 1.d0)/ &
-             dm_plus(ngcells)
+             dm_plus(ngcells) * 0.000000001
 
 
 end subroutine SecondaryGenJacobian
