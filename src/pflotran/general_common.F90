@@ -2794,7 +2794,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
       if (dabs(auxvars(idof)) > floweps) then
         v_darcy(iphase) = auxvars(idof)
         if (general_salt) then
-          xmol(option%salt_id) = auxvars(GENERAL_LIQUID_STATE_X_MOLE_DOF)
+          xmol(option%salt_id) = xmol(LIQUID_PHASE) !auxvars(GENERAL_LIQUID_STATE_S_MOLE_DOF)
           xmol(iphase) = 1.d0 - xmol(option%salt_id)
         endif
         if (v_darcy(iphase) > 0.d0) then
