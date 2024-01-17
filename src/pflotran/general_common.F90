@@ -667,7 +667,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
       Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
       Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
       if (general_salt) then
-        salt_mole_flux = tot_mole_flux * xmol(salt_comp_id)
+        salt_mole_flux = tot_mole_flux * xmol(salt_comp_id) * 0.0
         Res(salt_comp_id) = Res(salt_comp_id) + salt_mole_flux
       endif
 
@@ -2794,7 +2794,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
       if (dabs(auxvars(idof)) > floweps) then
         v_darcy(iphase) = auxvars(idof)
         if (general_salt) then
-          xmol(option%salt_id) = xmol(LIQUID_PHASE) !auxvars(GENERAL_LIQUID_STATE_S_MOLE_DOF)
+          xmol(option%salt_id) = auxvars(GENERAL_LIQUID_STATE_S_MOLE_DOF)
           xmol(iphase) = 1.d0 - xmol(option%salt_id)
         endif
         if (v_darcy(iphase) > 0.d0) then
@@ -2829,7 +2829,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
     Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
     Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
     if (general_salt) then
-      salt_mole_flux = tot_mole_flux * xmol(salt_comp_id)
+      salt_mole_flux = tot_mole_flux * xmol(salt_comp_id) * 0.0
       Res(salt_comp_id) = Res(salt_comp_id) + salt_mole_flux
     endif
     if (analytical_derivatives) then
