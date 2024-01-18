@@ -1030,8 +1030,7 @@ subroutine RTUpdateFixedAccumulation(realization)
     endif
 
     if (option%use_sc) then
-      accum_p(istart:iendall) = accum_p(istart:iendall)* &
-        rt_sec_transport_vars(ghosted_id)%epsilon
+      accum_p(istart:iendall) = accum_p(istart:iendall)
     endif
 
   enddo
