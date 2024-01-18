@@ -1666,23 +1666,13 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
       option%io_buffer = buffer
       call PrintMsg(option)
 
-      ! Print r_p before
-        option%io_buffer = 'r_p before: '
-        call PrintMsg(option)
-        ! For r_p
-        buffer = 'r_p before: '
-        do ii = 1, size(r_p)
-           write(buffer, '(*(g0), a)') trim(buffer), r_p(i)
-           if (ii < size(r_p)) write(buffer, '(a)') ', '
-        end do
-
       ! For vol_frac_prim
       !write(buffer, '(*(g0))') vol_frac_prim
       !option%io_buffer = buffer
       !call PrintMsg(option)
 
 
-      r_p(local_start:local_end) = r_p(local_start:local_end) - Res(:)*vol_frac_prim
+      r_p(local_start:local_end) = r_p(local_start:local_end) - Res(1:2)*vol_frac_prim
       !r_p(local_start:local_end)= r_p(local_start:local_end) - Res(1:3)*vol_frac_prim
 !      r_p(local_end) = r_p(local_end) - Res(3)*vol_frac_prim
 !
