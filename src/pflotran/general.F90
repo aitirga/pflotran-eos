@@ -1372,9 +1372,6 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
 
   PetscReal :: qsrc(realization%option%nflowdof)
 
-  character(len=512) :: buffer
-  integer :: ii
-
   character(len=MAXSTRINGLENGTH) :: string
 
   PetscInt :: icct_up, icct_dn
@@ -1638,20 +1635,11 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
       endif
 
 
-      local_end = local_id * option%nflowdof
+      local_end = local_id * option%nflowdof - 1
       local_start = local_end - option%nflowdof + 1
 
-      r_p(local_start:local_end) = r_p(local_start:local_end) - Res(1:4)*vol_frac_prim
-
-      ! Print r_p after
-        option%io_buffer = 'r_p after: '
-        call PrintMsg(option)
-        ! For r_p
-        buffer = 'r_p after: '
-        do ii = 1, size(r_p)
-           write(buffer, '(*(g0), a)') trim(buffer), r_p(i)
-           if (ii < size(r_p)) write(buffer, '(a)') ', '
-        end do
+      r_p(local_start:local_end) = r_p(local_start:local_end) - Res(1:3)*vol_frac_prim
+      r_p(local_end + 1) = r_p(local_end + 1) - Res(4)
 
     enddo
     boundary_condition => boundary_condition%next
