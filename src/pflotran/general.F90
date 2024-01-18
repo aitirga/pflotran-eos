@@ -1373,7 +1373,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
   PetscReal :: qsrc(realization%option%nflowdof)
 
   character(len=512) :: buffer
-  integer :: i
+  integer :: ii
 
   character(len=MAXSTRINGLENGTH) :: string
 
@@ -1653,9 +1653,9 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
 
       ! For Res
       buffer = 'Res: '
-      do i = 1, size(Res)
-         write(buffer, '(*(g0), a)', advance='no') trim(buffer), Res(i)
-         if (i < size(Res)) write(buffer, '(a)', advance='no') ', '
+      do ii = 1, size(Res)
+         write(buffer, '(*(g0), a)') trim(buffer), Res(i)
+         if (ii < size(Res)) write(buffer, '(a)') ', '
       end do
       option%io_buffer = buffer
       call PrintMsg(option)
