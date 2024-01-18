@@ -67,8 +67,7 @@ subroutine GeneralSetup(realization)
   PetscBool :: error_found
   PetscInt :: flag(10)
   PetscErrorCode :: ierr
-  character(len=512) :: buffer
-  integer :: i
+
                                                 ! extra index for derivatives
   type(general_auxvar_type), pointer :: gen_auxvars(:,:)
   type(general_auxvar_type), pointer :: gen_auxvars_bc(:)
@@ -1372,6 +1371,9 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
   PetscReal, pointer :: accum_p(:), accum_p2(:)
 
   PetscReal :: qsrc(realization%option%nflowdof)
+
+  character(len=512) :: buffer
+  integer :: i
 
   character(len=MAXSTRINGLENGTH) :: string
 
