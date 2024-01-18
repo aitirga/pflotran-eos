@@ -120,8 +120,8 @@ subroutine GeneralAccumulation(gen_auxvar,global_auxvar,material_auxvar, &
   Res(1:option%nflowspec) = Res(1:option%nflowspec) * &
                             porosity * volume_over_dt * vol_frac_prim !DF: concentration in the primary continuum ^si
 
-  Res(1:option%nflowspec) = 0.0
-  Res(option%salt_id) = 0.0
+  !Res(1:option%nflowspec) = 0.0
+  !Res(option%salt_id) = 0.0
 
   if (general_soluble_matrix) then
     ! Res[kmol/sec] = Res[kmol/sec] + (1-por)[m^3 solid/m^3 bulk] * den[kmol/m^3]
@@ -665,7 +665,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
       ! comp_mole_flux[kmol comp/sec] = tot_mole_flux[kmol phase/sec] *
       !                                 xmol[kmol comp/kmol phase]
       wat_mole_flux = tot_mole_flux * xmol(wat_comp_id)
-      air_mole_flux = tot_mole_flux * xmol(air_comp_id)
+      air_mole_flux = tot_mole_flux * xmol(air_comp_id) * 0.0
       Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
       Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
       Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
@@ -1130,7 +1130,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
       ! comp_mole_flux[kmol comp/sec] = tot_mole_flux[kmol phase/sec] *
       !                                 xmol[kmol comp/kmol phase]
       wat_mole_flux = tot_mole_flux * xmol(wat_comp_id)
-      air_mole_flux = tot_mole_flux * xmol(air_comp_id)
+      air_mole_flux = tot_mole_flux * xmol(air_comp_id) * 0.0
       Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
       Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
       Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
@@ -2827,7 +2827,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
     ! comp_mole_flux[kmol comp/sec] = tot_mole_flux[kmol phase/sec] *
     !                                 xmol[kmol comp/kmol phase]
     wat_mole_flux = tot_mole_flux * xmol(wat_comp_id)
-    air_mole_flux = tot_mole_flux * xmol(air_comp_id)
+    air_mole_flux = tot_mole_flux * xmol(air_comp_id) * 0.0
     Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
     Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
     Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
@@ -3187,7 +3187,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
     ! comp_mole_flux[kmol comp/sec] = tot_mole_flux[kmol phase/sec] *
     !                                 xmol[kmol comp/kmol phase]
     wat_mole_flux = tot_mole_flux * xmol(wat_comp_id)
-    air_mole_flux = tot_mole_flux * xmol(air_comp_id)
+    air_mole_flux = tot_mole_flux * xmol(air_comp_id) * 0.0
     Res(wat_comp_id) = Res(wat_comp_id) + wat_mole_flux
     Res(air_comp_id) = Res(air_comp_id) + air_mole_flux
     Res(energy_id) = Res(energy_id) + tot_mole_flux * uH
