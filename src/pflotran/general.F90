@@ -67,6 +67,8 @@ subroutine GeneralSetup(realization)
   PetscBool :: error_found
   PetscInt :: flag(10)
   PetscErrorCode :: ierr
+  character(len=512) :: buffer
+  integer :: i
                                                 ! extra index for derivatives
   type(general_auxvar_type), pointer :: gen_auxvars(:,:)
   type(general_auxvar_type), pointer :: gen_auxvars_bc(:)
@@ -1635,22 +1637,32 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
 
       local_end = local_id * option%nflowdof
       local_start = local_end - option%nflowdof + 1
-      option%io_buffer = 'local_start:'
+
+
+      ! For local_start
+      write(buffer, '(*(g0))') local_start
+      option%io_buffer = buffer
       call PrintMsg(option)
-        option%io_buffer = local_start
-        call PrintMsg(option)
-        option%io_buffer = 'local_end:'
-        call PrintMsg(option)
-        option%io_buffer = local_end
-        call PrintMsg(option)
-        option%io_buffer = 'Res:'
-        call PrintMsg(option)
-        option%io_buffer = Res(:)
-        call PrintMsg(option)
-        option%io_buffer = 'vol_frac_prim:'
-        call PrintMsg(option)
-        option%io_buffer = vol_frac_prim
-        call PrintMsg(option)
+
+      ! For local_end
+      write(buffer, '(*(g0))') local_end
+      option%io_buffer = buffer
+      call PrintMsg(option)
+
+      ! For Res
+      buffer = 'Res: '
+      do i = 1, size(Res)
+         write(buffer, '(*(g0), a)', advance='no') trim(buffer), Res(i)
+         if (i < size(Res)) write(buffer, '(a)', advance='no') ', '
+      end do
+      option%io_buffer = buffer
+      call PrintMsg(option)
+
+      ! For vol_frac_prim
+      write(buffer, '(*(g0))') vol_frac_prim
+      option%io_buffer = buffer
+      call PrintMsg(option)
+
 
       r_p(local_start:local_end) = r_p(local_start:local_end) - Res(:)*vol_frac_prim
       r_p(local_start:local_end)= r_p(local_start:local_end) - Res(1:3)*vol_frac_prim
