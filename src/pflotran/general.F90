@@ -1642,32 +1642,32 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
 
 
       ! For local_start
-      write(buffer, '(*(g0))') local_start
+      write(buffer, 'Local start: (*(g0))') local_start
       option%io_buffer = buffer
       call PrintMsg(option)
 
       ! For local_end
-      write(buffer, '(*(g0))') local_end
+      write(buffer, 'Local end:(*(g0))') local_end
       option%io_buffer = buffer
       call PrintMsg(option)
 
       ! For Res
       buffer = 'Res: '
       do ii = 1, size(Res)
-         write(buffer, '(*(g0), a)') trim(buffer), Res(i)
+         write(buffer, 'Res: (*(g0), a)') trim(buffer), Res(i)
          if (ii < size(Res)) write(buffer, '(a)') ', '
       end do
       option%io_buffer = buffer
       call PrintMsg(option)
 
       ! For vol_frac_prim
-      write(buffer, '(*(g0))') vol_frac_prim
-      option%io_buffer = buffer
-      call PrintMsg(option)
+      !write(buffer, '(*(g0))') vol_frac_prim
+      !option%io_buffer = buffer
+      !call PrintMsg(option)
 
 
       r_p(local_start:local_end) = r_p(local_start:local_end) - Res(:)*vol_frac_prim
-      r_p(local_start:local_end)= r_p(local_start:local_end) - Res(1:3)*vol_frac_prim
+      !r_p(local_start:local_end)= r_p(local_start:local_end) - Res(1:3)*vol_frac_prim
 !      r_p(local_end) = r_p(local_end) - Res(3)*vol_frac_prim
 !
     enddo
