@@ -214,12 +214,12 @@ subroutine TDispersion(global_auxvar_up,material_auxvar_up, &
     !   saturation * porosity * tortuosity * molecular diffusion
     hydrodynamic_dispersion_up(:) = &
       max(mechanical_dispersion_up + &
-           sat_up * material_auxvar_up%porosity * &
+          epsilon_up * sat_up * material_auxvar_up%porosity * &
           material_auxvar_up%tortuosity * molecular_diffusion_up(:), &
           1.d-40)
     hydrodynamic_dispersion_dn(:) = &
       max(mechanical_dispersion_dn + &
-           sat_dn * material_auxvar_dn%porosity * &
+          epsilon_dn * sat_dn * material_auxvar_dn%porosity * &
           material_auxvar_dn%tortuosity * molecular_diffusion_dn(:), &
           1.d-40)
     ! harmonic average of hydrodynamic dispersion divided by distance
