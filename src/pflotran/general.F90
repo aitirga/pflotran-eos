@@ -1635,7 +1635,10 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
 
       local_end = local_id * option%nflowdof
       local_start = local_end - option%nflowdof + 1
-!      r_p(local_start:local_end) = r_p(local_start:local_end) - Res(:)*vol_frac_prim
+      option%io_buffer = 'TEST TEST TEST'
+      call PrintMsg(option)
+
+      r_p(local_start:local_end) = r_p(local_start:local_end) - Res(:)*vol_frac_prim
       r_p(local_start:local_end)= r_p(local_start:local_end) - Res(1:3)*vol_frac_prim
 !      r_p(local_end) = r_p(local_end) - Res(3)*vol_frac_prim
 !
