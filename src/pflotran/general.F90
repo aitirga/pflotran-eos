@@ -1672,7 +1672,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
       !call PrintMsg(option)
 
 
-      r_p(local_start:local_end) = r_p(local_start:local_end) - Res(1:2)*vol_frac_prim
+      r_p(local_start:local_end) = r_p(local_start:local_end) - Res(1:4)*vol_frac_prim
       !r_p(local_start:local_end)= r_p(local_start:local_end) - Res(1:3)*vol_frac_prim
 !      r_p(local_end) = r_p(local_end) - Res(3)*vol_frac_prim
 !
