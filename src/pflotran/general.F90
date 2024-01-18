@@ -1633,7 +1633,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
         endif
       endif
 
-      local_end = local_id * option%nflowdof
+      local_end = local_id * option%nflowdof - 1
       local_start = local_end - option%nflowdof + 1
       r_p(local_start:local_end)= r_p(local_start:local_end) - Res(:)*vol_frac_prim
 
