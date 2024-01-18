@@ -1642,23 +1642,39 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
 
 
       ! For local_start
-      write(buffer, 'Local start: (*(g0))') local_start
+      option%io_buffer = 'local_start: '
+      call PrintMsg(option)
+      write(buffer, '(*(g0))') local_start
       option%io_buffer = buffer
       call PrintMsg(option)
 
+      option%io_buffer = 'local_end: '
+        call PrintMsg(option)
       ! For local_end
-      write(buffer, 'Local end:(*(g0))') local_end
+      write(buffer, '(*(g0))') local_end
       option%io_buffer = buffer
       call PrintMsg(option)
 
+      option%io_buffer = 'Res: '
+        call PrintMsg(option)
       ! For Res
       buffer = 'Res: '
       do ii = 1, size(Res)
-         write(buffer, 'Res: (*(g0), a)') trim(buffer), Res(i)
+         write(buffer, '(*(g0), a)') trim(buffer), Res(i)
          if (ii < size(Res)) write(buffer, '(a)') ', '
       end do
       option%io_buffer = buffer
       call PrintMsg(option)
+
+      ! Print r_p before
+        option%io_buffer = 'r_p before: '
+        call PrintMsg(option)
+        ! For r_p
+        buffer = 'r_p before: '
+        do ii = 1, size(r_p)
+           write(buffer, '(*(g0), a)') trim(buffer), r_p(i)
+           if (ii < size(r_p)) write(buffer, '(a)') ', '
+        end do
 
       ! For vol_frac_prim
       !write(buffer, '(*(g0))') vol_frac_prim
@@ -1670,6 +1686,17 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
       !r_p(local_start:local_end)= r_p(local_start:local_end) - Res(1:3)*vol_frac_prim
 !      r_p(local_end) = r_p(local_end) - Res(3)*vol_frac_prim
 !
+
+      ! Print r_p after
+        option%io_buffer = 'r_p after: '
+        call PrintMsg(option)
+        ! For r_p
+        buffer = 'r_p after: '
+        do ii = 1, size(r_p)
+           write(buffer, '(*(g0), a)') trim(buffer), r_p(i)
+           if (ii < size(r_p)) write(buffer, '(a)') ', '
+        end do
+
     enddo
     boundary_condition => boundary_condition%next
   enddo
