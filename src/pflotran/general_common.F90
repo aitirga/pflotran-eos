@@ -540,6 +540,12 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   call PermeabilityTensorToScalar(material_auxvar_up,dist,perm_up)
   call PermeabilityTensorToScalar(material_auxvar_dn,dist,perm_dn)
 
+  if (option%use_sc) then
+    vol_frac_prim = 1.d0 !material_auxvars(ghosted_id)%secondary_prop%epsilon
+  else
+    vol_frac_prim = 1.d0
+  endif
+
 #if 0
 !TODO(geh): remove for now
   ! Fracture permeability change only available for structured grid (Heeho)
