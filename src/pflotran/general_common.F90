@@ -439,8 +439,6 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   use Upwind_Direction_module
   use Characteristic_Curves_Thermal_module
   use Utility_module
-  use Secondary_Continuum_Aux_module
-  use Secondary_Continuum_module
   use Patch_module
 
 
@@ -456,11 +454,8 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   PetscInt :: upwind_direction_(option%nphase)
   type(general_parameter_type) :: general_parameter
   class(cc_thermal_type) :: thermal_cc_up, thermal_cc_dn
-  type(sec_gen_type), pointer :: sec_gen_vars(:)
-  type(patch_type),pointer :: patch
 
-
-  sec_gen_vars => patch%aux%SC_gen%sec_gen_vars
+  material_auxvars => patch%aux%Material%auxvars
   PetscReal :: Res(option%nflowdof)
   PetscReal :: Jup(option%nflowdof,option%nflowdof)
   PetscReal :: Jdn(option%nflowdof,option%nflowdof)
@@ -545,7 +540,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   salt_comp_id = option%salt_id
 
   if (option%use_sc) then
-    vol_frac_prim = sec_gen_vars(0)%epsilon
+    vol_frac_prim = material_auxvars(1)%secondary_prop%epsilon
   else
     vol_frac_prim = 1.d0
   endif
