@@ -452,6 +452,9 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   PetscInt :: upwind_direction_(option%nphase)
   type(general_parameter_type) :: general_parameter
   class(cc_thermal_type) :: thermal_cc_up, thermal_cc_dn
+  type(sec_gen_type), pointer :: sec_gen_vars(:)
+
+  sec_gen_vars => patch%aux%SC_gen%sec_gen_vars
   PetscReal :: Res(option%nflowdof)
   PetscReal :: Jup(option%nflowdof,option%nflowdof)
   PetscReal :: Jdn(option%nflowdof,option%nflowdof)
@@ -534,6 +537,12 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   air_comp_id = option%air_id
   energy_id = option%energy_id
   salt_comp_id = option%salt_id
+
+  if (option%use_sc) then
+    vol_frac_prim = sec_gen_vars(0)%epsilon
+  else
+    vol_frac_prim = 1.d0
+  endif
 
   call ConnectionCalculateDistances(dist,option%gravity,dist_up,dist_dn, &
                                     dist_gravity,upweight)
@@ -644,7 +653,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
           v_darcy(iphase) = perm_ave_over_dist(iphase) * mobility * delta_pressure
 
           ! q[m^3 phase/sec] = v_darcy[m/sec] * area[m^2]
-          q = v_darcy(iphase) * area / 0.1
+          q = v_darcy(iphase) * area / vol_frac_prim
           ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
           !                             density_ave[kmol phase/m^3 phase]
           tot_mole_flux = q*density_ave
