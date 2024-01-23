@@ -1509,7 +1509,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                                 sec_diffusion_coefficient,&
                                 gen_auxvars(ZERO_INTEGER,ghosted_id)%xmol(3,1), &
                                 option,res_sec_gen)
-      r_p(iend-1) = r_p(iend-1) - res_sec_gen*material_auxvars(ghosted_id)%volume*vol_frac_prim
+      r_p(iend-1) = r_p(iend-1) - res_sec_gen*material_auxvars(ghosted_id)%volume
 
     enddo
   endif
@@ -1945,7 +1945,7 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
                                   option,jac_sec_gen)
         Jup(option%nflowdof,3) = &
                                  Jup(option%nflowdof,3) - &
-                                 jac_sec_gen*material_auxvars(ghosted_id)%volume * vol_frac_prim
+                                 jac_sec_gen*material_auxvars(ghosted_id)%volume
       endif
     endif
     call MatSetValuesBlockedLocal(A,1,ghosted_id-1,1,ghosted_id-1,Jup, &
