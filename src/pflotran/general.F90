@@ -1552,7 +1552,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                        update_upwind_direction, &
                        count_upwind_direction_flip, &
                        (local_id_up == general_debug_cell_id .or. &
-                        local_id_dn == general_debug_cell_id))
+                        local_id_dn == general_debug_cell_id), vol_frac_prim)
 
       patch%internal_velocities(:,sum_connection) = v_darcy
       if (associated(patch%internal_flow_fluxes)) then
@@ -1616,7 +1616,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                      general_analytical_derivatives, &
                      update_upwind_direction, &
                      count_upwind_direction_flip, &
-                     local_id == general_debug_cell_id)
+                     local_id == general_debug_cell_id, vol_frac_prim)
       patch%boundary_velocities(:,sum_connection) = v_darcy
       if (associated(patch%boundary_flow_fluxes)) then
         patch%boundary_flow_fluxes(:,sum_connection) = Res(:)
@@ -1997,7 +1997,7 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
                      cur_connection_set%dist(:,iconn), &
                      patch%flow_upwind_direction(:,iconn), &
                      general_parameter,option,&
-                     Jup,Jdn)
+                     Jup,Jdn, vol_frac_prim)
       !Jup = Jup * vol_frac_prim
       !Jdn = Jdn * vol_frac_prim
       if (local_id_up > 0) then
@@ -2065,7 +2065,7 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
                       cur_connection_set%dist(:,iconn), &
                       patch%flow_upwind_direction_bc(:,iconn), &
                       general_parameter,option, &
-                      Jdn)
+                      Jdn, vol_frac_prim)
      ! Jup = Jup * vol_frac_prim
      ! Jdn = Jdn * vol_frac_prim
       Jdn = -Jdn

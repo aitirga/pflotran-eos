@@ -610,7 +610,7 @@ subroutine GeneralDerivativeFlux(pert,general_auxvar,global_auxvar, &
                    option,v_darcy,res,jac_anal,jac_anal2, &
                    update_upwind_direction_, &
                    count_upwind_direction_flip_, &
-                   PETSC_TRUE,PETSC_FALSE)
+                   PETSC_TRUE,PETSC_FALSE, 1.d0)
 
   do i = 1, 3
     call GeneralFlux(general_auxvar(i), &
@@ -625,7 +625,7 @@ subroutine GeneralDerivativeFlux(pert,general_auxvar,global_auxvar, &
                      option,v_darcy,res_pert(:,i),jac_dum,jac_dum2, &
                      update_upwind_direction_, &
                      count_upwind_direction_flip_, &
-                     PETSC_FALSE,PETSC_FALSE)
+                     PETSC_FALSE,PETSC_FALSE, 1.d0)
     do irow = 1, option%nflowdof
       jac_num(irow,i) = (res_pert(irow,i)-res(irow))/pert(i)
     enddo !irow
@@ -643,7 +643,7 @@ subroutine GeneralDerivativeFlux(pert,general_auxvar,global_auxvar, &
                      option,v_darcy,res_pert2(:,i),jac_dum,jac_dum2, &
                      update_upwind_direction_, &
                      count_upwind_direction_flip_, &
-                     PETSC_FALSE,PETSC_FALSE)
+                     PETSC_FALSE,PETSC_FALSE, 1.d0)
     do irow = 1, option%nflowdof
       jac_num2(irow,i) = (res_pert2(irow,i)-res(irow))/pert2(i)
     enddo !irow
@@ -723,7 +723,7 @@ subroutine GeneralDerivativeFluxBC(pert, &
                      option,v_darcy,res,jac_anal, &
                      update_upwind_direction_, &
                      count_upwind_direction_flip_, &
-                     PETSC_TRUE,PETSC_FALSE)
+                     PETSC_TRUE,PETSC_FALSE, 1.d0)
 
   do i = 1, 3
     call GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
@@ -735,7 +735,7 @@ subroutine GeneralDerivativeFluxBC(pert, &
                        option,v_darcy,res_pert(:,i),jac_dum, &
                        update_upwind_direction_, &
                        count_upwind_direction_flip_, &
-                       PETSC_FALSE,PETSC_FALSE)
+                       PETSC_FALSE,PETSC_FALSE, 1.d0)
     do irow = 1, option%nflowdof
       jac_num(irow,i) = (res_pert(irow,i)-res(irow))/pert(i)
     enddo !irow
