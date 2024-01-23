@@ -1636,7 +1636,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
 
       local_end = local_id * option%nflowdof
       local_start = local_end - option%nflowdof + 1
-      r_p(local_start:local_end)= r_p(local_start:local_end) - Res(:)*vol_frac_prim
+      r_p(local_start:local_end)= r_p(local_start:local_end) - Res(:)
 
     enddo
     boundary_condition => boundary_condition%next
