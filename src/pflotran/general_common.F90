@@ -4613,7 +4613,7 @@ subroutine GeneralFluxDerivative(gen_auxvar_up,global_auxvar_up, &
                    PETSC_FALSE, & ! update the upwind direction
                    ! avoid double counting upwind direction flip
                    PETSC_FALSE, & ! count upwind direction flip
-                   PETSC_FALSE, 1.d0)
+                   PETSC_FALSE, 1.d-1)
 
   if (general_analytical_derivatives) then
     Jup = Janal_up
@@ -4633,7 +4633,7 @@ subroutine GeneralFluxDerivative(gen_auxvar_up,global_auxvar_up, &
                        PETSC_FALSE, & ! analytical derivatives
                        PETSC_FALSE, & ! update the upwind direction
                        count_upwind_direction_flip, &
-                       PETSC_FALSE, 1.d0)
+                       PETSC_FALSE, 1.d-1)
 
       do irow = 1, option%nflowdof
         Jup(irow,idof) = (res_pert(irow)-res(irow))/gen_auxvar_up(idof)%pert
@@ -4656,7 +4656,7 @@ subroutine GeneralFluxDerivative(gen_auxvar_up,global_auxvar_up, &
                        PETSC_FALSE, & ! analytical derivatives
                        PETSC_FALSE, & ! update the upwind direction
                        count_upwind_direction_flip, &
-                       PETSC_FALSE, 1.d0)
+                       PETSC_FALSE, 1.d-1)
 
 
       do irow = 1, option%nflowdof
@@ -4743,7 +4743,7 @@ subroutine GeneralBCFluxDerivative(ibndtype,auxvar_mapping,auxvars, &
                      PETSC_FALSE, & ! update the upwind direction
                      ! avoid double counting upwind direction flip
                      PETSC_FALSE, & ! count upwind direction flip
-                     PETSC_FALSE, 1.d0)
+                     PETSC_FALSE, 1.d-1)
 
   if (general_analytical_derivatives) then
     Jdn = Jdum
@@ -4761,7 +4761,7 @@ subroutine GeneralBCFluxDerivative(ibndtype,auxvar_mapping,auxvars, &
                          PETSC_FALSE, & ! analytical derivatives
                          PETSC_FALSE, & ! update the upwind direction
                          count_upwind_direction_flip, &
-                         PETSC_FALSE, 1.d0)
+                         PETSC_FALSE, 1.d-1)
 
 
       do irow = 1, option%nflowdof
