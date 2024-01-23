@@ -445,6 +445,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   type(general_auxvar_type) :: gen_auxvar_up, gen_auxvar_dn
   type(global_auxvar_type) :: global_auxvar_up, global_auxvar_dn
   type(material_auxvar_type) :: material_auxvar_up, material_auxvar_dn
+  type(material_auxvar_type), pointer :: material_auxvars(:)
   type(option_type) :: option
   PetscReal :: v_darcy(option%nphase)
   PetscReal :: area
@@ -542,7 +543,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   call PermeabilityTensorToScalar(material_auxvar_dn,dist,perm_dn)
 
   if (option%use_sc) then
-    vol_frac_prim = material_auxvar_up(1)%secondary_prop%epsilon
+    vol_frac_prim = 1.d0 ! material_auxvar_up(1)%secondary_prop%epsilon
   else
     vol_frac_prim = 1.d0
   endif
