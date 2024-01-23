@@ -4743,7 +4743,7 @@ subroutine GeneralBCFluxDerivative(ibndtype,auxvar_mapping,auxvars, &
                      PETSC_FALSE, & ! update the upwind direction
                      ! avoid double counting upwind direction flip
                      PETSC_FALSE, & ! count upwind direction flip
-                     PETSC_FALSE, 1.d-1)
+                     PETSC_FALSE, material_auxvar_dn%secondary_prop%epsilon)
 
   if (general_analytical_derivatives) then
     Jdn = Jdum
@@ -4761,7 +4761,7 @@ subroutine GeneralBCFluxDerivative(ibndtype,auxvar_mapping,auxvars, &
                          PETSC_FALSE, & ! analytical derivatives
                          PETSC_FALSE, & ! update the upwind direction
                          count_upwind_direction_flip, &
-                         PETSC_FALSE, 1.d-1)
+                         PETSC_FALSE, material_auxvar_dn%secondary_prop%epsilon)
 
 
       do irow = 1, option%nflowdof
