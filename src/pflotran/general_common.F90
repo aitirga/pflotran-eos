@@ -4613,7 +4613,7 @@ subroutine GeneralFluxDerivative(gen_auxvar_up,global_auxvar_up, &
                    PETSC_FALSE, & ! update the upwind direction
                    ! avoid double counting upwind direction flip
                    PETSC_FALSE, & ! count upwind direction flip
-                   PETSC_FALSE, 1.d-1)
+                   PETSC_FALSE, material_auxvar_up%secondary_prop%epsilon)
 
   if (general_analytical_derivatives) then
     Jup = Janal_up
