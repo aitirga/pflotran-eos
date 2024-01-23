@@ -424,7 +424,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
                        analytical_derivatives, &
                        update_upwind_direction_, &
                        count_upwind_direction_flip_, &
-                       debug_connection)
+                       debug_connection, vol_frac_prim)
   !
   ! Computes the internal flux terms for the residual
   !
@@ -439,18 +439,12 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   use Upwind_Direction_module
   use Characteristic_Curves_Thermal_module
   use Utility_module
-  use Realization_Subsurface_class
-  use Patch_module
 
   implicit none
-  class(realization_subsurface_type) :: realization
 
   type(general_auxvar_type) :: gen_auxvar_up, gen_auxvar_dn
   type(global_auxvar_type) :: global_auxvar_up, global_auxvar_dn
   type(material_auxvar_type) :: material_auxvar_up, material_auxvar_dn
-  type(material_auxvar_type), pointer :: material_auxvars(:)
-  type(patch_type), pointer :: patch
-
   type(option_type) :: option
   PetscReal :: v_darcy(option%nphase)
   PetscReal :: area
@@ -531,30 +525,22 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   PetscReal :: dkeff_up_dTup, dkeff_dn_dTdn
   PetscReal :: dkeff_ave_dkeffup, dkeff_ave_dkeffdn
   PetscReal :: dheat_flux_ddelta_temp, dheat_flux_dkeff_ave
-  PetscReal :: vol_frac_prim
 
   PetscReal :: Jlup(3,3), Jldn(3,3)
   PetscReal :: Jgup(3,3), Jgdn(3,3)
   PetscReal :: Jcup(3,3), Jcdn(3,3)
+
+  PetscReal :: vol_frac_prim
 
   wat_comp_id = option%water_id
   air_comp_id = option%air_id
   energy_id = option%energy_id
   salt_comp_id = option%salt_id
 
-  patch => realization%patch
-
-
   call ConnectionCalculateDistances(dist,option%gravity,dist_up,dist_dn, &
                                     dist_gravity,upweight)
   call PermeabilityTensorToScalar(material_auxvar_up,dist,perm_up)
   call PermeabilityTensorToScalar(material_auxvar_dn,dist,perm_dn)
-
-  if (option%use_sc) then
-    vol_frac_prim = 1.d0 ! material_auxvar_up(1)%secondary_prop%epsilon
-  else
-    vol_frac_prim = 1.d0
-  endif
 
 #if 0
 !TODO(geh): remove for now
