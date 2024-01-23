@@ -439,8 +439,6 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   use Upwind_Direction_module
   use Characteristic_Curves_Thermal_module
   use Utility_module
-  use Patch_module
-
 
   implicit none
 
@@ -448,15 +446,12 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   type(global_auxvar_type) :: global_auxvar_up, global_auxvar_dn
   type(material_auxvar_type) :: material_auxvar_up, material_auxvar_dn
   type(option_type) :: option
-  type(patch_type) :: patch
   PetscReal :: v_darcy(option%nphase)
   PetscReal :: area
   PetscReal :: dist(-1:3)
   PetscInt :: upwind_direction_(option%nphase)
   type(general_parameter_type) :: general_parameter
   class(cc_thermal_type) :: thermal_cc_up, thermal_cc_dn
-
-  material_auxvars => patch%aux%Material%auxvars
   PetscReal :: Res(option%nflowdof)
   PetscReal :: Jup(option%nflowdof,option%nflowdof)
   PetscReal :: Jdn(option%nflowdof,option%nflowdof)
@@ -539,12 +534,6 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   air_comp_id = option%air_id
   energy_id = option%energy_id
   salt_comp_id = option%salt_id
-
-  if (option%use_sc) then
-    vol_frac_prim = material_auxvars(1)%secondary_prop%epsilon
-  else
-    vol_frac_prim = 1.d0
-  endif
 
   call ConnectionCalculateDistances(dist,option%gravity,dist_up,dist_dn, &
                                     dist_gravity,upweight)
