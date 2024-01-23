@@ -1554,21 +1554,21 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                        (local_id_up == general_debug_cell_id .or. &
                         local_id_dn == general_debug_cell_id))
 
-      patch%internal_velocities(:,sum_connection) = v_darcy*vol_frac_prim
+      patch%internal_velocities(:,sum_connection) = v_darcy
       if (associated(patch%internal_flow_fluxes)) then
-        patch%internal_flow_fluxes(:,sum_connection) = Res(:)*vol_frac_prim
+        patch%internal_flow_fluxes(:,sum_connection) = Res(:)
       endif
 
       if (local_id_up > 0) then
         local_end = local_id_up * option%nflowdof
         local_start = local_end - option%nflowdof + 1
-        r_p(local_start:local_end) = r_p(local_start:local_end) + Res(:) * vol_frac_prim
+        r_p(local_start:local_end) = r_p(local_start:local_end) + Res(:)
       endif
 
       if (local_id_dn > 0) then
         local_end = local_id_dn * option%nflowdof
         local_start = local_end - option%nflowdof + 1
-        r_p(local_start:local_end) = r_p(local_start:local_end) - Res(:) * vol_frac_prim
+        r_p(local_start:local_end) = r_p(local_start:local_end) - Res(:)
       endif
     enddo
 
@@ -1617,7 +1617,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                      update_upwind_direction, &
                      count_upwind_direction_flip, &
                      local_id == general_debug_cell_id)
-      patch%boundary_velocities(:,sum_connection) = v_darcy*vol_frac_prim
+      patch%boundary_velocities(:,sum_connection) = v_darcy
       if (associated(patch%boundary_flow_fluxes)) then
         patch%boundary_flow_fluxes(:,sum_connection) = Res(:)
       endif
@@ -1636,7 +1636,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
 
       local_end = local_id * option%nflowdof
       local_start = local_end - option%nflowdof + 1
-      r_p(local_start:local_end)= r_p(local_start:local_end) - Res(:)*vol_frac_prim
+      r_p(local_start:local_end)= r_p(local_start:local_end) - Res(:)
 
     enddo
     boundary_condition => boundary_condition%next
@@ -1684,7 +1684,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                           PETSC_FALSE, &
                           local_id == general_debug_cell_id)
 
-      r_p(local_start:local_end) =  r_p(local_start:local_end) - Res(:)*vol_frac_prim
+      r_p(local_start:local_end) =  r_p(local_start:local_end) - Res(:)
 
       if (associated(patch%ss_flow_vol_fluxes)) then
         patch%ss_flow_vol_fluxes(:,sum_connection) = ss_flow_vol_flux
