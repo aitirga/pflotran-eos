@@ -1562,13 +1562,13 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
       if (local_id_up > 0) then
         local_end = local_id_up * option%nflowdof
         local_start = local_end - option%nflowdof + 1
-        r_p(local_start:local_end) = r_p(local_start:local_end) + Res(:)
+        r_p(local_start:local_end) = r_p(local_start:local_end) + Res(:) * vol_frac_prim
       endif
 
       if (local_id_dn > 0) then
         local_end = local_id_dn * option%nflowdof
         local_start = local_end - option%nflowdof + 1
-        r_p(local_start:local_end) = r_p(local_start:local_end) - Res(:)
+        r_p(local_start:local_end) = r_p(local_start:local_end) - Res(:) * vol_frac_prim
       endif
     enddo
 
@@ -1636,7 +1636,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
 
       local_end = local_id * option%nflowdof
       local_start = local_end - option%nflowdof + 1
-      r_p(local_start:local_end)= r_p(local_start:local_end) - Res(:)
+      r_p(local_start:local_end)= r_p(local_start:local_end) - Res(:)*vol_frac_prim
 
     enddo
     boundary_condition => boundary_condition%next
@@ -1684,7 +1684,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                           PETSC_FALSE, &
                           local_id == general_debug_cell_id)
 
-      r_p(local_start:local_end) =  r_p(local_start:local_end) - Res(:)
+      r_p(local_start:local_end) =  r_p(local_start:local_end) - Res(:)*vol_frac_prim
 
       if (associated(patch%ss_flow_vol_fluxes)) then
         patch%ss_flow_vol_fluxes(:,sum_connection) = ss_flow_vol_flux
