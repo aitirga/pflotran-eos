@@ -449,6 +449,8 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   type(global_auxvar_type) :: global_auxvar_up, global_auxvar_dn
   type(material_auxvar_type) :: material_auxvar_up, material_auxvar_dn
   type(material_auxvar_type), pointer :: material_auxvars(:)
+  type(patch_type), pointer :: patch
+
   type(option_type) :: option
   PetscReal :: v_darcy(option%nphase)
   PetscReal :: area
