@@ -4633,7 +4633,7 @@ subroutine GeneralFluxDerivative(gen_auxvar_up,global_auxvar_up, &
                        PETSC_FALSE, & ! analytical derivatives
                        PETSC_FALSE, & ! update the upwind direction
                        count_upwind_direction_flip, &
-                       PETSC_FALSE, 1.d-1)
+                       PETSC_FALSE, material_auxvar_up%secondary_prop%epsilon)
 
       do irow = 1, option%nflowdof
         Jup(irow,idof) = (res_pert(irow)-res(irow))/gen_auxvar_up(idof)%pert
@@ -4656,7 +4656,7 @@ subroutine GeneralFluxDerivative(gen_auxvar_up,global_auxvar_up, &
                        PETSC_FALSE, & ! analytical derivatives
                        PETSC_FALSE, & ! update the upwind direction
                        count_upwind_direction_flip, &
-                       PETSC_FALSE, 1.d-1)
+                       PETSC_FALSE, material_auxvar_up%secondary_prop%epsilon)
 
 
       do irow = 1, option%nflowdof
