@@ -4592,11 +4592,18 @@ subroutine GeneralFluxDerivative(gen_auxvar_up,global_auxvar_up, &
   PetscReal :: Jdummy(option%nflowdof,option%nflowdof)
 
   PetscReal :: v_darcy(option%nphase)
+  PetscReal :: vol_frac_prim
   PetscReal :: res(option%nflowdof), res_pert(option%nflowdof)
   PetscInt :: idof, irow
 
   Jup = 0.d0
   Jdn = 0.d0
+
+  if (option%use_sc) then
+    vol_frac_prim = material_auxvar_up%secondary_prop%epsilon
+  else
+    vol_frac_prim = 1.d0
+  endif
 
 !geh:print *, 'GeneralFluxDerivative'
   option%iflag = -2
@@ -4613,7 +4620,7 @@ subroutine GeneralFluxDerivative(gen_auxvar_up,global_auxvar_up, &
                    PETSC_FALSE, & ! update the upwind direction
                    ! avoid double counting upwind direction flip
                    PETSC_FALSE, & ! count upwind direction flip
-                   PETSC_FALSE, material_auxvar_up%secondary_prop%epsilon)
+                   PETSC_FALSE, vol_frac_prim)
 
   if (general_analytical_derivatives) then
     Jup = Janal_up
@@ -4633,7 +4640,7 @@ subroutine GeneralFluxDerivative(gen_auxvar_up,global_auxvar_up, &
                        PETSC_FALSE, & ! analytical derivatives
                        PETSC_FALSE, & ! update the upwind direction
                        count_upwind_direction_flip, &
-                       PETSC_FALSE, material_auxvar_up%secondary_prop%epsilon)
+                       PETSC_FALSE, vol_frac_prim)
 
       do irow = 1, option%nflowdof
         Jup(irow,idof) = (res_pert(irow)-res(irow))/gen_auxvar_up(idof)%pert
@@ -4656,7 +4663,7 @@ subroutine GeneralFluxDerivative(gen_auxvar_up,global_auxvar_up, &
                        PETSC_FALSE, & ! analytical derivatives
                        PETSC_FALSE, & ! update the upwind direction
                        count_upwind_direction_flip, &
-                       PETSC_FALSE, material_auxvar_up%secondary_prop%epsilon)
+                       PETSC_FALSE, vol_frac_prim)
 
 
       do irow = 1, option%nflowdof
