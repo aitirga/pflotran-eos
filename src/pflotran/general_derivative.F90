@@ -575,7 +575,7 @@ subroutine GeneralDerivativeFlux(pert,general_auxvar,global_auxvar, &
 !  PetscReal, parameter :: dist(-1:3) = [0.5d0,1.d0,sqrt(2.d0/2.d0),0.d0,sqrt(2.d0/2.d0)]
   PetscReal, parameter :: dist(-1:3) = [0.5d0,1.d0,0.d0,0.d0,1.d0]
 
-  PetscReal :: v_darcy(2)
+  PetscReal :: v_darcy(2), vol_frac_prim
 
   PetscBool :: update_upwind_direction_ = PETSC_TRUE
   PetscBool :: count_upwind_direction_flip_ = PETSC_FALSE
@@ -592,6 +592,13 @@ subroutine GeneralDerivativeFlux(pert,general_auxvar,global_auxvar, &
   PetscReal :: jac_anal2(3,3)
   PetscReal :: jac_num2(3,3)
   PetscReal :: jac_dum2(3,3)
+
+
+  if (option%use_sc) then
+    vol_frac_prim = material_auxvar(ZERO_INTEGER)%secondary_prop%epsilon
+  else
+    vol_frac_prim = 1.d0
+  endif
 
   call GeneralPrintAuxVars(general_auxvar(0),global_auxvar(0),material_auxvar(0), &
                            natural_id,'upwind',option)
@@ -610,7 +617,7 @@ subroutine GeneralDerivativeFlux(pert,general_auxvar,global_auxvar, &
                    option,v_darcy,res,jac_anal,jac_anal2, &
                    update_upwind_direction_, &
                    count_upwind_direction_flip_, &
-                   PETSC_TRUE,PETSC_FALSE, material_auxvar(ZERO_INTEGER)%secondary_prop%epsilon)
+                   PETSC_TRUE,PETSC_FALSE, vol_frac_prim)
 
   do i = 1, 3
     call GeneralFlux(general_auxvar(i), &
@@ -625,7 +632,7 @@ subroutine GeneralDerivativeFlux(pert,general_auxvar,global_auxvar, &
                      option,v_darcy,res_pert(:,i),jac_dum,jac_dum2, &
                      update_upwind_direction_, &
                      count_upwind_direction_flip_, &
-                     PETSC_FALSE,PETSC_FALSE, material_auxvar(ZERO_INTEGER)%secondary_prop%epsilon)
+                     PETSC_FALSE,PETSC_FALSE, vol_frac_prim)
     do irow = 1, option%nflowdof
       jac_num(irow,i) = (res_pert(irow,i)-res(irow))/pert(i)
     enddo !irow
@@ -643,7 +650,7 @@ subroutine GeneralDerivativeFlux(pert,general_auxvar,global_auxvar, &
                      option,v_darcy,res_pert2(:,i),jac_dum,jac_dum2, &
                      update_upwind_direction_, &
                      count_upwind_direction_flip_, &
-                     PETSC_FALSE,PETSC_FALSE, material_auxvar(ZERO_INTEGER)%secondary_prop%epsilon)
+                     PETSC_FALSE,PETSC_FALSE, vol_frac_prim)
     do irow = 1, option%nflowdof
       jac_num2(irow,i) = (res_pert2(irow,i)-res(irow))/pert2(i)
     enddo !irow
