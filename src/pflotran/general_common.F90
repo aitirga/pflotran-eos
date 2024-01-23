@@ -440,6 +440,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   use Characteristic_Curves_Thermal_module
   use Utility_module
   use Realization_Subsurface_class
+  use Patch_module
 
   implicit none
 
