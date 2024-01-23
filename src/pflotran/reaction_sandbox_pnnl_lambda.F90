@@ -97,7 +97,6 @@ subroutine LambdaRead(this,input,option)
   use Option_module
   use String_module
   use Input_Aux_module
-  use Units_module, only : UnitsConvertToInternal
 
   implicit none
 
@@ -208,8 +207,8 @@ subroutine LambdaSetup(this,reaction,option)
   PetscReal, pointer :: stoich(:,:)
   PetscInt, pointer :: species_ids(:,:)
 
-  call ReactionNetworkToStoich(reaction,this%reaction_network_filename, &
-                               species_ids,stoich,option)
+  call ReactionAuxNetworkToStoich(reaction,this%reaction_network_filename, &
+                                  species_ids,stoich,option)
 
   ! Determines the number of rxns and species in the problem
   ! and allocates arrays
@@ -233,20 +232,20 @@ subroutine LambdaSetup(this,reaction,option)
 
   word = 'O2(aq)'
   this%i_o2 = &
-    GetPrimarySpeciesIDFromName(word,reaction,option)
+    ReactionAuxGetPriSpecIDFromName(word,reaction,option)
 
   word = 'NH4+'
   this%i_nh4 = &
-    GetPrimarySpeciesIDFromName(word,reaction,option)
+    ReactionAuxGetPriSpecIDFromName(word,reaction,option)
 
   word = 'BIOMASS'
   this%i_biomass = &
-    GetPrimarySpeciesIDFromName(word,reaction,option)
+    ReactionAuxGetPriSpecIDFromName(word,reaction,option)
 
   if (len_trim(this%scaling_mineral_name) > 0) then
     this%i_scaling_mineral = &
-      GetKineticMineralIDFromName(this%scaling_mineral_name, &
-                                  reaction%mineral,option)
+      ReactionMnrlGetKinMnrlIDFromName(this%scaling_mineral_name, &
+                                       reaction%mineral,option)
   endif
 
   ! Input file must have carbon species indicated by the word "DONOR"
@@ -282,9 +281,10 @@ subroutine LambdaEvaluate(this,Residual,Jacobian,compute_derivative, &
   ! Author: Katie Muller
   ! Date: 07/05/22
 
+  use Material_Aux_module
   use Option_module
   use Reaction_Aux_module
-  use Material_Aux_module
+  use Reaction_Inhibition_Aux_module
 
   implicit none
 
@@ -357,21 +357,22 @@ subroutine LambdaEvaluate(this,Residual,Jacobian,compute_derivative, &
   C_reactant_inhibit = 1.d-18
   select case(this%inhibition_type)
     case(LAMBDA_SMOOTHSTEP_INHIBITION)
-      call ReactionThreshInhibitSmoothstep(C_aq(this%i_nh4), &
-                                           dabs(this%nh4_inhibit),1.d-3, &
-                                           nh4_inhibition,tempreal)
+!      call ReactionThreshInhibitSmoothstep(C_aq(this%i_nh4), &
+      call ReactionInhibitionSmoothstep(C_aq(this%i_nh4), &
+                                             dabs(this%nh4_inhibit),1.d-3, &
+                                             nh4_inhibition,tempreal)
       do icomp = 1, this%n_species
-        call ReactionThreshInhibitSmoothstep(C_aq(icomp),C_reactant_inhibit, &
-                                             1.d-3, &
-                                             Reactant_inhibition(icomp), &
-                                             tempreal)
+        call ReactionInhibitionSmoothstep(C_aq(icomp),C_reactant_inhibit, &
+                                          1.d-3, &
+                                          Reactant_inhibition(icomp), &
+                                          tempreal)
       enddo
     case(LAMBDA_THRESHOLD_INHIBITION)
-      call ReactionThresholdInhibition(C_aq(this%i_nh4), &
+      call ReactionInhibitionThreshold(C_aq(this%i_nh4), &
                                        dabs(this%nh4_inhibit), &
                                        nh4_inhibition,tempreal)
       do icomp = 1, this%n_species
-        call ReactionThresholdInhibition(C_aq(icomp),C_reactant_inhibit, &
+        call ReactionInhibitionThreshold(C_aq(icomp),C_reactant_inhibit, &
                                          Reactant_inhibition(icomp),tempreal)
       enddo
   end select

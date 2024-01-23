@@ -933,7 +933,7 @@ subroutine WriteObservationHeaderSec(fid,realization_base,cell_string, &
   if (option%ntrandof > 0) then
     select case(option%itranmode)
       case(RT_MODE)
-        reaction => ReactionCast(realization_base%reaction_base)
+        reaction => ReactionAuxCast(realization_base%reaction_base)
         if (print_secondary_data(2)) then
           do j = 1, reaction%naqcomp
             do i = 1, option%nsec_cells
@@ -1029,7 +1029,7 @@ subroutine WriteObservationHeaderForBC(fid,realization_base,coupler_name)
   class(reaction_nw_type), pointer :: reaction_nw
 
   option => realization_base%option
-  reaction => ReactionCast(realization_base%reaction_base)
+  reaction => ReactionAuxCast(realization_base%reaction_base)
   reaction_nw => NWTReactionCast(realization_base%reaction_base)
 
   select case(option%iflowmode)
@@ -1360,7 +1360,7 @@ subroutine WriteObservationDataForBC(fid,realization_base,patch,connection_set)
   PetscErrorCode :: ierr
 
   option => realization_base%option
-  reaction => ReactionCast(realization_base%reaction_base)
+  reaction => ReactionAuxCast(realization_base%reaction_base)
 
 110 format(es14.6)
 
@@ -1860,7 +1860,7 @@ subroutine WriteObservationSecondaryDataAtCell(fid,realization_base,local_id,iva
     if (option%ntrandof > 0) then
       select case(option%itranmode)
         case(RT_MODE)
-          reaction => ReactionCast(realization_base%reaction_base)
+          reaction => ReactionAuxCast(realization_base%reaction_base)
           if (ivar == PRINT_SEC_CONC) then
             do naqcomp = 1, reaction%naqcomp
               do i = 1, option%nsec_cells
@@ -2076,7 +2076,7 @@ subroutine OutputIntegralFlux(realization_base)
   grid => patch%grid
   option => realization_base%option
   output_option => realization_base%output_option
-  reaction => ReactionCast(realization_base%reaction_base)
+  reaction => ReactionAuxCast(realization_base%reaction_base)
   reaction_nw => NWTReactionCast(realization_base%reaction_base)
 
   if (.not.associated(patch%integral_flux_list%first)) return
@@ -2413,7 +2413,7 @@ subroutine OutputMassBalance(realization_base)
   patch => realization_base%patch
   grid => patch%grid
   option => realization_base%option
-  reaction => ReactionCast(realization_base%reaction_base)
+  reaction => ReactionAuxCast(realization_base%reaction_base)
   reaction_nw => NWTReactionCast(realization_base%reaction_base)
   output_option => realization_base%output_option
 

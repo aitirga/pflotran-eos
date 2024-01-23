@@ -335,9 +335,9 @@ subroutine CyberSetup(this,reaction,option)
   ! Date: 10/01/15
   !
 
-  use Reaction_Aux_module, only : reaction_rt_type, GetPrimarySpeciesIDFromName
-  use Reaction_Immobile_Aux_module, only : GetImmobileSpeciesIDFromName
-  use Reaction_Mineral_Aux_module, only : GetKineticMineralIDFromName
+  use Reaction_Aux_module
+  use Reaction_Immobile_Aux_module
+  use Reaction_Mineral_Aux_module
   use Option_module
 
   implicit none
@@ -353,39 +353,39 @@ subroutine CyberSetup(this,reaction,option)
 
   word = 'NH4+'
   this%nh4_id = &
-    GetPrimarySpeciesIDFromName(word,reaction,option)
+    ReactionAuxGetPriSpecIDFromName(word,reaction,option)
   word = 'O2(aq)'
   this%o2_id = &
-    GetPrimarySpeciesIDFromName(word,reaction,option)
+    ReactionAuxGetPriSpecIDFromName(word,reaction,option)
   word = 'NO3-'
   this%no3_id = &
-    GetPrimarySpeciesIDFromName(word,reaction,option)
+    ReactionAuxGetPriSpecIDFromName(word,reaction,option)
   word = 'NO2-'
   this%no2_id = &
-    GetPrimarySpeciesIDFromName(word,reaction,option)
+    ReactionAuxGetPriSpecIDFromName(word,reaction,option)
   word = 'N2(aq)'
   this%n2_id = &
-    GetPrimarySpeciesIDFromName(word,reaction,option)
+    ReactionAuxGetPriSpecIDFromName(word,reaction,option)
   word = 'CH2O(aq)'
   this%doc_id = &
-    GetPrimarySpeciesIDFromName(word,reaction,option)
+    ReactionAuxGetPriSpecIDFromName(word,reaction,option)
   if (this%mobile_biomass) then
     word = 'C5H7O2N(aq)'
     this%biomass_id = &
-      GetPrimarySpeciesIDFromName(word,reaction,option)
+      ReactionAuxGetPriSpecIDFromName(word,reaction,option)
   else
     word = 'C5H7O2N(im)'
     this%biomass_id = &
-      GetImmobileSpeciesIDFromName(word,reaction%immobile,option) + &
+      ReactionImGetSpeciesIDFromName(word,reaction%immobile,option) + &
       reaction%offset_immobile
   endif
   word = 'CO2(aq)'
   this%co2_id = &
-    GetPrimarySpeciesIDFromName(word,reaction,option)
+    ReactionAuxGetPriSpecIDFromName(word,reaction,option)
   if (len_trim(this%carbon_consumption_species) > 0) then
     word = this%carbon_consumption_species
     this%carbon_consumption_species_id = &
-      GetImmobileSpeciesIDFromName(word,reaction%immobile,option)
+      ReactionImGetSpeciesIDFromName(word,reaction%immobile,option)
   endif
   if (this%store_cumulative_mass) then
     this%offset_auxiliary = reaction%nauxiliary
@@ -592,6 +592,7 @@ subroutine CyberReact(this,Residual,Jacobian,compute_derivative, &
 
   use Option_module
   use Reaction_Aux_module
+  use Reaction_Inhibition_Aux_module
   use Material_Aux_module
 
   implicit none
@@ -699,49 +700,49 @@ subroutine CyberReact(this,Residual,Jacobian,compute_derivative, &
   if (Initialized(this%inhibit_by_reactants)) then
     select case(this%inhibit_func)
       case(INHIBIT_FUNC_ARCTAN1)
-        call ReactionThresholdInhibition(Cnh4,this%inhibit_by_reactants, &
+        call ReactionInhibitionThreshold(Cnh4,this%inhibit_by_reactants, &
                                          nh4_inhibition,dnh4_inhibition_dnh4)
-        call ReactionThresholdInhibition(Cdoc,this%inhibit_by_reactants, &
+        call ReactionInhibitionThreshold(Cdoc,this%inhibit_by_reactants, &
                                          doc_inhibition,drate_ddoc_inhib)
-        call ReactionThresholdInhibition(Co2,this%inhibit_by_reactants, &
+        call ReactionInhibitionThreshold(Co2,this%inhibit_by_reactants, &
                                          o2_inhibition,drate_do2_inhib)
-        call ReactionThresholdInhibition(Cno3,this%inhibit_by_reactants, &
+        call ReactionInhibitionThreshold(Cno3,this%inhibit_by_reactants, &
                                          no3_inhibition,drate_dno3_inhib)
-        call ReactionThresholdInhibition(Cno2,this%inhibit_by_reactants, &
+        call ReactionInhibitionThreshold(Cno2,this%inhibit_by_reactants, &
                                          no2_inhibition,drate_dno2_inhib)
       case(INHIBIT_FUNC_ARCTAN2)
-        call ReactionThresholdInhibition2(Cnh4,this%inhibit_by_reactants, &
+        call ReactionInhibitionThreshold(Cnh4,this%inhibit_by_reactants, &
+                                         this%inhibit_func_constant, &
+                                         nh4_inhibition,dnh4_inhibition_dnh4)
+        call ReactionInhibitionThreshold(Cdoc,this%inhibit_by_reactants, &
+                                         this%inhibit_func_constant, &
+                                         doc_inhibition,drate_ddoc_inhib)
+        call ReactionInhibitionThreshold(Co2,this%inhibit_by_reactants, &
+                                         this%inhibit_func_constant, &
+                                         o2_inhibition,drate_do2_inhib)
+        call ReactionInhibitionThreshold(Cno3,this%inhibit_by_reactants, &
+                                         this%inhibit_func_constant, &
+                                         no3_inhibition,drate_dno3_inhib)
+        call ReactionInhibitionThreshold(Cno2,this%inhibit_by_reactants, &
+                                         this%inhibit_func_constant, &
+                                         no2_inhibition,drate_dno2_inhib)
+      case(INHIBIT_FUNC_SMOOTHSTEP)
+        call ReactionInhibitionSmoothstep(Cnh4,this%inhibit_by_reactants, &
                                           this%inhibit_func_constant, &
-                                          nh4_inhibition,dnh4_inhibition_dnh4)
-        call ReactionThresholdInhibition2(Cdoc,this%inhibit_by_reactants, &
+                                          nh4_inhibition, &
+                                          dnh4_inhibition_dnh4)
+        call ReactionInhibitionSmoothstep(Cdoc,this%inhibit_by_reactants, &
                                           this%inhibit_func_constant, &
                                           doc_inhibition,drate_ddoc_inhib)
-        call ReactionThresholdInhibition2(Co2,this%inhibit_by_reactants, &
+        call ReactionInhibitionSmoothstep(Co2,this%inhibit_by_reactants, &
                                           this%inhibit_func_constant, &
                                           o2_inhibition,drate_do2_inhib)
-        call ReactionThresholdInhibition2(Cno3,this%inhibit_by_reactants, &
+        call ReactionInhibitionSmoothstep(Cno3,this%inhibit_by_reactants, &
                                           this%inhibit_func_constant, &
                                           no3_inhibition,drate_dno3_inhib)
-        call ReactionThresholdInhibition2(Cno2,this%inhibit_by_reactants, &
+        call ReactionInhibitionSmoothstep(Cno2,this%inhibit_by_reactants, &
                                           this%inhibit_func_constant, &
                                           no2_inhibition,drate_dno2_inhib)
-      case(INHIBIT_FUNC_SMOOTHSTEP)
-        call ReactionThreshInhibitSmoothstep(Cnh4,this%inhibit_by_reactants, &
-                                             this%inhibit_func_constant, &
-                                             nh4_inhibition, &
-                                             dnh4_inhibition_dnh4)
-        call ReactionThreshInhibitSmoothstep(Cdoc,this%inhibit_by_reactants, &
-                                             this%inhibit_func_constant, &
-                                             doc_inhibition,drate_ddoc_inhib)
-        call ReactionThreshInhibitSmoothstep(Co2,this%inhibit_by_reactants, &
-                                             this%inhibit_func_constant, &
-                                             o2_inhibition,drate_do2_inhib)
-        call ReactionThreshInhibitSmoothstep(Cno3,this%inhibit_by_reactants, &
-                                             this%inhibit_func_constant, &
-                                             no3_inhibition,drate_dno3_inhib)
-        call ReactionThreshInhibitSmoothstep(Cno2,this%inhibit_by_reactants, &
-                                             this%inhibit_func_constant, &
-                                             no2_inhibition,drate_dno2_inhib)
     end select
     drate_ddoc_inhib = drate_ddoc_inhib * &
                        rt_auxvar%pri_act_coef(this%doc_id) * &

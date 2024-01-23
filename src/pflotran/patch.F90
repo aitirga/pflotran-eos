@@ -97,21 +97,6 @@ module Patch_module
 
   end type patch_type
 
-  ! pointer data structure required for making an array of patch pointers in F90
-  type, public :: patch_ptr_type
-    type(patch_type), pointer :: ptr           ! pointer to the patch_type
-  end type patch_ptr_type
-
-  type, public :: patch_list_type
-    PetscInt :: num_patch_objects
-    type(patch_type), pointer :: first
-    type(patch_type), pointer :: last
-    type(patch_ptr_type), pointer :: array(:)
-  end type patch_list_type
-
-  PetscInt, parameter, public :: INT_VAR = 0
-  PetscInt, parameter, public :: REAL_VAR = 1
-
   interface PatchGetVariable
     module procedure PatchGetVariable1
     module procedure PatchGetVariable2
@@ -124,15 +109,12 @@ module Patch_module
     module procedure PatchUnsupportedVariable4
   end interface
 
-  public :: PatchCreate, PatchDestroy, PatchCreateList, PatchDestroyList, &
-            PatchAddToList, PatchConvertListToArray, PatchProcessCouplers, &
+  public :: PatchCreate, PatchDestroy, PatchProcessCouplers, &
             PatchUpdateAllCouplerAuxVars, PatchInitAllCouplerAuxVars, &
             PatchLocalizeRegions, PatchUpdateUniformVelocity, &
             PatchGetVariable, PatchGetVariableValueAtCell, &
             PatchSetVariable, PatchCouplerInputRecord, &
-            PatchInitConstraints, &
-            PatchCountCells, PatchGetIvarsFromKeyword, &
-            PatchGetVarNameFromKeyword, &
+            PatchInitConstraints, PatchCountCells, &
             PatchCalculateCFL1Timestep, &
             PatchGetCellCenteredVelocities, &
             PatchGetWaterMassInRegion, &
@@ -224,85 +206,6 @@ function PatchCreate()
   PatchCreate => patch
 
 end function PatchCreate
-
-! ************************************************************************** !
-
-function PatchCreateList()
-  !
-  ! PatchListCreate: Creates a patch list
-  !
-  ! Author: Glenn Hammond
-  ! Date: 02/22/08
-  !
-
-  implicit none
-
-  type(patch_list_type), pointer :: PatchCreateList
-
-  type(patch_list_type), pointer :: patch_list
-
-  allocate(patch_list)
-  nullify(patch_list%first)
-  nullify(patch_list%last)
-  nullify(patch_list%array)
-  patch_list%num_patch_objects = 0
-
-  PatchCreateList => patch_list
-
-end function PatchCreateList
-
-! ************************************************************************** !
-
-subroutine PatchAddToList(new_patch,patch_list)
-  !
-  ! Adds a new patch to list
-  !
-  ! Author: Glenn Hammond
-  ! Date: 02/22/08
-  !
-
-  implicit none
-
-  type(patch_type), pointer :: new_patch
-  type(patch_list_type) :: patch_list
-
-  if (associated(new_patch)) then
-     patch_list%num_patch_objects = patch_list%num_patch_objects + 1
-     new_patch%id = patch_list%num_patch_objects
-     if (.not.associated(patch_list%first)) patch_list%first => new_patch
-     if (associated(patch_list%last)) patch_list%last%next => new_patch
-     patch_list%last => new_patch
-  end if
-end subroutine PatchAddToList
-
-! ************************************************************************** !
-
-subroutine PatchConvertListToArray(patch_list)
-  !
-  ! Creates an array of pointers to the
-  ! patchs in the patch list
-  !
-  ! Author: Glenn Hammond
-  ! Date: 02/22/08
-  !
-
-  implicit none
-
-  type(patch_list_type) :: patch_list
-
-  type(patch_type), pointer :: cur_patch
-
-
-  allocate(patch_list%array(patch_list%num_patch_objects))
-
-  cur_patch => patch_list%first
-  do
-    if (.not.associated(cur_patch)) exit
-    patch_list%array(cur_patch%id)%ptr => cur_patch
-    cur_patch => cur_patch%next
-  enddo
-
-end subroutine PatchConvertListToArray
 
 ! ************************************************************************** !
 
@@ -851,6 +754,7 @@ subroutine PatchInitCouplerAuxVars(coupler_list,patch,option)
   use Transport_Constraint_module
   use General_Aux_module
   use WIPP_Flow_Aux_module
+  use Dataset_Common_HDF5_class
 
   implicit none
 
@@ -1107,6 +1011,26 @@ subroutine PatchInitCouplerAuxVars(coupler_list,patch,option)
         cur_constraint_coupler => cur_constraint_coupler%next
       enddo
     endif
+
+    ! catch boundary conditions that couple cell indexed datasets
+    if (coupler%itype /= INITIAL_COUPLER_TYPE .and. &
+        associated(coupler%flow_condition)) then
+      do temp_int = 1, size(coupler%flow_condition%sub_condition_ptr)
+        select type(selector=>coupler%flow_condition% &
+                                sub_condition_ptr(temp_int)%ptr%dataset)
+          class is(dataset_common_hdf5_type)
+            if (selector%is_cell_indexed) then
+              option%io_buffer = 'Cell indexed dataset cannot be coupled &
+                &to boundary conditions or source/sinks. That is the case &
+                &for FLOW_CONDITION "' // trim(coupler%flow_condition%name) // &
+                '" in BOUNDARY_CONDITION or SOURCE_SINK "' // &
+                trim(coupler%name) // '".'
+              call PrintErrMsg(option)
+            endif
+        end select
+      enddo
+    endif
+
     coupler => coupler%next
   enddo
 
@@ -2877,7 +2801,7 @@ subroutine PatchUpdateCouplerAuxVarsH(patch,coupler,option)
                 coupler%flow_bc_type(3) = DIRICHLET_BC
               endif
             elseif (associated(hydrate%energy_flux)) then
-              coupler%flow_bc_type(3) = NEUMANN_BC 
+              coupler%flow_bc_type(3) = NEUMANN_BC
             endif
             ! ---> see code that just prints error
             coupler%flow_bc_type(1) = HYDROSTATIC_BC
@@ -4082,7 +4006,8 @@ subroutine PatchUpdateCouplerAuxVarsTH(patch,coupler,option)
   endif
 
   apply_temp_cond = PETSC_FALSE
-  if (associated(flow_condition%temperature) .and. associated(flow_condition%pressure)) then
+  if (associated(flow_condition%temperature) .and. &
+      associated(flow_condition%pressure)) then
     if (flow_condition%pressure%itype /= HYDROSTATIC_BC) then
       apply_temp_cond = PETSC_TRUE
     else
@@ -5266,9 +5191,18 @@ subroutine PatchInitCouplerConstraints(coupler_list,reaction_base,option)
     do
       if (.not.associated(cur_constraint_coupler)) exit
       global_auxvar => cur_constraint_coupler%global_auxvar
+      ! set to reference values
+      global_auxvar%pres = option%flow%reference_pressure
+      global_auxvar%temp = option%flow%reference_temperature
+      global_auxvar%den_kg(option%liquid_phase) = &
+        option%flow%reference_density(option%liquid_phase)
+      ! overwrite the reference values, if applicable
       if (associated(cur_coupler%flow_condition)) then
         if (associated(cur_coupler%flow_condition%pressure)) then
-          if (associated(cur_coupler%flow_condition%pressure%dataset)) then
+          if (associated(cur_coupler%flow_condition%pressure%dataset) .and. &
+              ! pressure is also used for flux, but the flux value
+              ! is NOT a pressure!
+              cur_coupler%flow_condition%pressure%itype /= NEUMANN_BC) then
             ! only use dataset value if the dataset is of type ascii
             select type(dataset=>cur_coupler%flow_condition%pressure%dataset)
               class is(dataset_ascii_type)
@@ -5277,13 +5211,8 @@ subroutine PatchInitCouplerConstraints(coupler_list,reaction_base,option)
                 ! otherwise, we don't know which pressure to use at this point,
                 ! but we need to re-equilibrate at each cell
                 cur_constraint_coupler%equilibrate_at_each_cell = PETSC_TRUE
-                global_auxvar%pres = option%flow%reference_pressure
             end select
-          else
-            global_auxvar%pres = option%flow%reference_pressure
           endif
-        else
-          global_auxvar%pres = option%flow%reference_pressure
         endif
         if (associated(cur_coupler%flow_condition%temperature)) then
           if (associated(cur_coupler%flow_condition%temperature%dataset)) then
@@ -5295,13 +5224,8 @@ subroutine PatchInitCouplerConstraints(coupler_list,reaction_base,option)
                 ! otherwise, we don't know which temperature to use at this
                 ! point, but we need to re-equilibrate at each cell
                 cur_constraint_coupler%equilibrate_at_each_cell = PETSC_TRUE
-                global_auxvar%temp = option%flow%reference_temperature
             end select
-          else
-            global_auxvar%temp = option%flow%reference_temperature
           endif
-        else
-          global_auxvar%temp = option%flow%reference_temperature
         endif
 
         call EOSWaterDensity(global_auxvar%temp, &
@@ -5452,7 +5376,7 @@ subroutine PatchGetVariable1(patch,field,reaction_base,option, &
   use Mphase_Aux_module
   use TH_Aux_module
   use Richards_Aux_module
-  use Reaction_Gas_module, only : RGasConcentration
+  use Reaction_Gas_module, only : ReactionGasPartialPresToConc
   use Reaction_Mineral_module
   use Reaction_Redox_module
   use Reaction_module
@@ -5497,7 +5421,7 @@ subroutine PatchGetVariable1(patch,field,reaction_base,option, &
 
   grid => patch%grid
   material_auxvars => patch%aux%Material%auxvars
-  reaction => ReactionCast(reaction_base)
+  reaction => ReactionAuxCast(reaction_base)
 
   call VecGetArrayF90(vec,vec_ptr,ierr);CHKERRQ(ierr)
   vec_ptr(:) = UNINITIALIZED_DOUBLE
@@ -6013,11 +5937,16 @@ subroutine PatchGetVariable1(patch,field,reaction_base,option, &
           case(LIQUID_VISCOSITY)
             do local_id=1,grid%nlmax
               ghosted_id = grid%nL2G(local_id)
-              vec_ptr(local_id) = &
-                patch%aux%General%auxvars(ZERO_INTEGER, &
-                  ghosted_id)%kr(option%liquid_phase) / &
-                patch%aux%General%auxvars(ZERO_INTEGER, &
-                  ghosted_id)%mobility(option%liquid_phase)
+              tempreal = patch%aux%General%auxvars(ZERO_INTEGER, &
+                         ghosted_id)%mobility(option%liquid_phase)
+              if (tempreal > 0.d0) then
+                vec_ptr(local_id) = &
+                  patch%aux%General%auxvars(ZERO_INTEGER, &
+                    ghosted_id)%kr(option%liquid_phase) / &
+                    tempreal
+              else
+                vec_ptr(local_id) = 0.d0
+              endif
             enddo
           case(GAS_SATURATION)
             do local_id=1,grid%nlmax
@@ -6508,7 +6437,7 @@ subroutine PatchGetVariable1(patch,field,reaction_base,option, &
         case(PH)
           do local_id=1,grid%nlmax
             ghosted_id = grid%nL2G(local_id)
-            call RRedoxCalcpH(patch%aux%RT%auxvars(ghosted_id), &
+            call ReactionRedoxCalcpH(patch%aux%RT%auxvars(ghosted_id), &
                               patch%aux%Global%auxvars(ghosted_id), &
                               reaction,ph0,option)
             vec_ptr(local_id) = ph0
@@ -6516,7 +6445,7 @@ subroutine PatchGetVariable1(patch,field,reaction_base,option, &
         case(EH)
           do local_id=1,grid%nlmax
             ghosted_id = grid%nL2G(local_id)
-            call RRedoxCalcEhpe(patch%aux%RT%auxvars(ghosted_id), &
+            call ReactionRedoxCalcEhpe(patch%aux%RT%auxvars(ghosted_id), &
                                   patch%aux%Global%auxvars(ghosted_id), &
                                   reaction,eh0,pe0,option)
             vec_ptr(local_id) = eh0
@@ -6524,7 +6453,7 @@ subroutine PatchGetVariable1(patch,field,reaction_base,option, &
         case(PE)
           do local_id=1,grid%nlmax
             ghosted_id = grid%nL2G(local_id)
-            call RRedoxCalcEhpe(patch%aux%RT%auxvars(ghosted_id), &
+            call ReactionRedoxCalcEhpe(patch%aux%RT%auxvars(ghosted_id), &
                                   patch%aux%Global%auxvars(ghosted_id), &
                                   reaction,eh0,pe0,option)
             vec_ptr(local_id) = pe0
@@ -6532,7 +6461,7 @@ subroutine PatchGetVariable1(patch,field,reaction_base,option, &
         case(O2)
           do local_id=1,grid%nlmax
             ghosted_id = grid%nL2G(local_id)
-            call RRedoxCalcLnFO2(patch%aux%RT%auxvars(ghosted_id), &
+            call ReactionRedoxCalcLnFO2(patch%aux%RT%auxvars(ghosted_id), &
                                  patch%aux%Global%auxvars(ghosted_id), &
                                  reaction,lnQKgas,option)
             vec_ptr(local_id) = lnQKgas
@@ -6640,9 +6569,8 @@ subroutine PatchGetVariable1(patch,field,reaction_base,option, &
             do local_id=1,grid%nlmax
               ! mol/m^3 gas
               vec_ptr(local_id) = &
-                RGasConcentration(vec_ptr(local_id), &
-                                  patch%aux%Global% &
-                                    auxvars(grid%nL2G(local_id))%temp)
+                ReactionGasPartialPresToConc(vec_ptr(local_id), &
+                          patch%aux%Global%auxvars(grid%nL2G(local_id))%temp)
             enddo
           endif
         case(MINERAL_VOLUME_FRACTION)
@@ -6664,10 +6592,10 @@ subroutine PatchGetVariable1(patch,field,reaction_base,option, &
           do local_id = 1, grid%nlmax
             ghosted_id = grid%nL2G(local_id)
             vec_ptr(local_id) = &
-              RMineralSaturationIndex(isubvar, &
-                                      patch%aux%RT%auxvars(ghosted_id), &
-                                      patch%aux%Global%auxvars(ghosted_id), &
-                                      reaction,option)
+              ReactionMnrlSaturationIndex(isubvar, &
+                                    patch%aux%RT%auxvars(ghosted_id), &
+                                    patch%aux%Global%auxvars(ghosted_id), &
+                                    reaction,option)
           enddo
         case(IMMOBILE_SPECIES)
           do local_id=1,grid%nlmax
@@ -6794,7 +6722,8 @@ subroutine PatchGetVariable1(patch,field,reaction_base,option, &
           patch%aux%Global%auxvars(grid%nL2G(local_id))%istate
       enddo
     case(POROSITY,BASE_POROSITY,INITIAL_POROSITY, &
-         VOLUME,TORTUOSITY,SOIL_COMPRESSIBILITY, &
+         TORTUOSITY,TORTUOSITY_Y,TORTUOSITY_Z, &
+         VOLUME,SOIL_COMPRESSIBILITY, &
          EPSILON,HALF_MATRIX_WIDTH, NUMBER_SECONDARY_CELLS,&
          SOIL_REFERENCE_PRESSURE, &
          ARCHIE_CEMENTATION_EXPONENT,ARCHIE_SATURATION_EXPONENT, &
@@ -7070,7 +6999,7 @@ function PatchGetVariableValueAtCell(patch,field,reaction_base,option, &
   use TH_Aux_module
   use Richards_Aux_module
   use Reactive_Transport_Aux_module
-  use Reaction_Gas_module, only : RGasConcentration
+  use Reaction_Gas_module, only : ReactionGasPartialPresToConc
   use Reaction_Mineral_module
   use Reaction_Redox_module
   use Reaction_module
@@ -7115,7 +7044,7 @@ function PatchGetVariableValueAtCell(patch,field,reaction_base,option, &
 
   grid => patch%grid
   material_auxvars => patch%aux%Material%auxvars
-  reaction => ReactionCast(reaction_base)
+  reaction => ReactionAuxCast(reaction_base)
 
   value = UNINITIALIZED_DOUBLE
 
@@ -7737,22 +7666,22 @@ function PatchGetVariableValueAtCell(patch,field,reaction_base,option, &
 
       select case(ivar)
         case(PH)
-          call RRedoxCalcpH(patch%aux%RT%auxvars(ghosted_id), &
+          call ReactionRedoxCalcpH(patch%aux%RT%auxvars(ghosted_id), &
                             patch%aux%Global%auxvars(ghosted_id), &
                             reaction,ph0,option)
           value = ph0
         case(EH)
-          call RRedoxCalcEhpe(patch%aux%RT%auxvars(ghosted_id), &
+          call ReactionRedoxCalcEhpe(patch%aux%RT%auxvars(ghosted_id), &
                                 patch%aux%Global%auxvars(ghosted_id), &
                                 reaction,eh0,pe0,option)
           value = eh0
         case(PE)
-          call RRedoxCalcEhpe(patch%aux%RT%auxvars(ghosted_id), &
+          call ReactionRedoxCalcEhpe(patch%aux%RT%auxvars(ghosted_id), &
                                 patch%aux%Global%auxvars(ghosted_id), &
                                 reaction,eh0,pe0,option)
           value = pe0
         case(O2)
-          call RRedoxCalcLnFO2(patch%aux%RT%auxvars(ghosted_id), &
+          call ReactionRedoxCalcLnFO2(patch%aux%RT%auxvars(ghosted_id), &
                                patch%aux%Global%auxvars(ghosted_id), &
                                reaction,lnQKgas,option)
           value = lnQKgas * LN_TO_LOG
@@ -7761,7 +7690,7 @@ function PatchGetVariableValueAtCell(patch,field,reaction_base,option, &
         case(PRIMARY_MOLARITY)
           value = patch%aux%RT%auxvars(ghosted_id)%pri_molal(isubvar)*xmass * &
                   patch%aux%Global%auxvars(ghosted_id)%den_kg(iphase) / 1000.d0
-        case(SECONDARY_MOLALITY)  
+        case(SECONDARY_MOLALITY)
           value = patch%aux%RT%auxvars(ghosted_id)%sec_molal(isubvar)
         case(SECONDARY_MOLARITY)
           value = patch%aux%RT%auxvars(ghosted_id)%sec_molal(isubvar)*xmass * &
@@ -7804,9 +7733,8 @@ function PatchGetVariableValueAtCell(patch,field,reaction_base,option, &
             value = 0.d0
           endif
           if (ivar == GAS_CONCENTRATION) then
-            value = RGasConcentration(value, &
-                                      patch%aux%Global% &
-                                        auxvars(ghosted_id)%temp)
+            value = ReactionGasPartialPresToConc(value, &
+                               patch%aux%Global%auxvars(ghosted_id)%temp)
           endif
         case(MINERAL_VOLUME_FRACTION)
           value = patch%aux%RT%auxvars(ghosted_id)%mnrl_volfrac(isubvar)
@@ -7815,10 +7743,10 @@ function PatchGetVariableValueAtCell(patch,field,reaction_base,option, &
         case(MINERAL_RATE)
           value = patch%aux%RT%auxvars(ghosted_id)%mnrl_rate(isubvar)
         case(MINERAL_SATURATION_INDEX)
-          value = RMineralSaturationIndex(isubvar, &
-                                         patch%aux%RT%auxvars(ghosted_id), &
-                                         patch%aux%Global%auxvars(ghosted_id), &
-                                         reaction,option)
+          value = ReactionMnrlSaturationIndex(isubvar, &
+                                    patch%aux%RT%auxvars(ghosted_id), &
+                                    patch%aux%Global%auxvars(ghosted_id), &
+                                    reaction,option)
         case(IMMOBILE_SPECIES)
           value = patch%aux%RT%auxvars(ghosted_id)%immobile(isubvar)
         case(SURFACE_CMPLX)
@@ -7855,7 +7783,7 @@ function PatchGetVariableValueAtCell(patch,field,reaction_base,option, &
             patch%aux%RT%auxvars(ghosted_id)%kinsrfcplx_free_site_conc(isubvar)
         case(PRIMARY_ACTIVITY_COEF)
           value = patch%aux%RT%auxvars(ghosted_id)%pri_act_coef(isubvar)
-        case(SECONDARY_ACTIVITY_COEF)  
+        case(SECONDARY_ACTIVITY_COEF)
           value = patch%aux%RT%auxvars(ghosted_id)%sec_act_coef(isubvar)
         case(PRIMARY_KD)
           call ReactionComputeKd(isubvar,value, &
@@ -7895,7 +7823,8 @@ function PatchGetVariableValueAtCell(patch,field,reaction_base,option, &
     case(STATE,PHASE)
       value = patch%aux%Global%auxvars(ghosted_id)%istate
     case(POROSITY,BASE_POROSITY,INITIAL_POROSITY, &
-         VOLUME,TORTUOSITY,SOIL_COMPRESSIBILITY,SOIL_REFERENCE_PRESSURE, &
+         TORTUOSITY,TORTUOSITY_Y,TORTUOSITY_Z, &
+         VOLUME,SOIL_COMPRESSIBILITY,SOIL_REFERENCE_PRESSURE, &
          EPSILON,HALF_MATRIX_WIDTH, &
          ARCHIE_CEMENTATION_EXPONENT, &
          ARCHIE_SATURATION_EXPONENT,ARCHIE_TORTUOSITY_CONSTANT, &
@@ -8035,12 +7964,12 @@ function PatchGetVariableValueAtCell(patch,field,reaction_base,option, &
                sec_rt_auxvar) < isubvar) then
         value = UNINITIALIZED_DOUBLE
       else
-        value = RMineralSaturationIndex(isubvar2,&
-                                        patch%aux%SC_RT% &
-                                        sec_transport_vars(local_id)% &
-                                        sec_rt_auxvar(isubvar), &
-                                        patch%aux%Global%auxvars(ghosted_id),&
-                                        reaction,option)
+        value = ReactionMnrlSaturationIndex(isubvar2,&
+                                    patch%aux%SC_RT% &
+                                    sec_transport_vars(local_id)% &
+                                    sec_rt_auxvar(isubvar), &
+                                    patch%aux%Global%auxvars(ghosted_id), &
+                                    reaction,option)
       endif
     case(SALINITY)
       value = patch%aux%Global%auxvars(ghosted_id)%m_nacl(ONE_INTEGER)
@@ -8844,7 +8773,8 @@ subroutine PatchSetVariable(patch,field,option,vec,vec_format,ivar,isubvar)
         patch%aux%Global%auxvars(grid%nL2G(local_id))%istate = &
           int(vec_ptr(local_id)+1.d-10)
       enddo
-    case(VOLUME,TORTUOSITY,SOIL_COMPRESSIBILITY,SOIL_REFERENCE_PRESSURE)
+    case(VOLUME,TORTUOSITY,TORTUOSITY_Y,TORTUOSITY_Z,SOIL_COMPRESSIBILITY, &
+         SOIL_REFERENCE_PRESSURE)
       option%io_buffer = 'Setting of volume, tortuosity, ' // &
         'soil compressibility or soil reference pressure in ' // &
         '"PatchSetVariable" not supported.'
@@ -9093,80 +9023,6 @@ subroutine PatchCalculateCFL1Timestep(patch,option,max_dt_cfl_1, &
   max_pore_velocity = -tempreal(2)
 
 end subroutine PatchCalculateCFL1Timestep
-
-! ************************************************************************** !
-
-function PatchGetVarNameFromKeyword(keyword,option)
-  !
-  ! Returns the name of variable defined by keyword
-  !
-  ! Author: Glenn Hammond
-  ! Date: 07/28/11
-  !
-
-  use Option_module
-
-  implicit none
-
-  character(len=MAXWORDLENGTH) :: keyword
-  type(option_type) :: option
-
-  character(len=MAXSTRINGLENGTH) :: PatchGetVarNameFromKeyword
-  character(len=MAXSTRINGLENGTH) :: var_name
-
-  select case(keyword)
-    case('PROCESS_ID')
-      var_name = 'Processor ID'
-    case('NATURAL_ID')
-      var_name = 'Natural ID'
-    case default
-      option%io_buffer = 'Keyword "' // trim(keyword) // '" not ' // &
-                         'recognized in PatchGetIvarsFromKeyword()'
-      call PrintErrMsg(option)
-  end select
-
-  PatchGetVarNameFromKeyword = var_name
-
-end function PatchGetVarNameFromKeyword
-
-! ************************************************************************** !
-
-subroutine PatchGetIvarsFromKeyword(keyword,ivar,isubvar,var_type,option)
-  !
-  ! Returns the ivar and isubvars for extracting
-  ! datasets using PatchGet/PatchSet routines
-  !
-  ! Author: Glenn Hammond
-  ! Date: 07/28/11
-  !
-
-  use Option_module
-  use Variables_module
-
-  implicit none
-
-  character(len=MAXWORDLENGTH) :: keyword
-  PetscInt :: ivar
-  PetscInt :: isubvar
-  PetscInt :: var_type
-  type(option_type) :: option
-
-  select case(keyword)
-    case('PROCESS_ID')
-      ivar = PROCESS_ID
-      isubvar = ZERO_INTEGER
-      var_type = INT_VAR
-    case('NATURAL_ID')
-      ivar = NATURAL_ID
-      isubvar = ZERO_INTEGER
-      var_type = INT_VAR
-    case default
-      option%io_buffer = 'Keyword "' // trim(keyword) // '" not ' // &
-                         'recognized in PatchGetIvarsFromKeyword()'
-      call PrintErrMsg(option)
-  end select
-
-end subroutine
 
 ! ************************************************************************** !
 
@@ -10378,44 +10234,6 @@ subroutine PatchUnsupportedVariable4(ivar,option)
   call PatchUnsupportedVariable('','',ivar,option)
 
 end subroutine PatchUnsupportedVariable4
-
-! ************************************************************************** !
-
-subroutine PatchDestroyList(patch_list)
-  !
-  ! Deallocates a patch list and array of patches
-  !
-  ! Author: Glenn Hammond
-  ! Date: 10/15/07
-  !
-
-  implicit none
-
-  type(patch_list_type), pointer :: patch_list
-
-  type(patch_type), pointer :: cur_patch, prev_patch
-
-  if (.not.associated(patch_list)) return
-
-  if (associated(patch_list%array)) deallocate(patch_list%array)
-  nullify(patch_list%array)
-
-  cur_patch => patch_list%first
-  do
-    if (.not.associated(cur_patch)) exit
-    prev_patch => cur_patch
-    cur_patch => cur_patch%next
-    call PatchDestroy(prev_patch)
-  enddo
-
-  nullify(patch_list%first)
-  nullify(patch_list%last)
-  patch_list%num_patch_objects = 0
-
-  deallocate(patch_list)
-  nullify(patch_list)
-
-end subroutine PatchDestroyList
 
 ! ************************************************************************** !
 

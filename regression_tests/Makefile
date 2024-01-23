@@ -73,6 +73,7 @@ STANDARD_CFG = \
 	default/infiltration1d/infiltration1d.cfg \
 	default/input_format/input_format.cfg \
 	default/integral_flux/integral_flux.cfg \
+	default/materials/anisotropic_tortuosity/anisotropic_tortuosity.cfg \
 	default/materials/full_tensor/full_tensor.cfg \
 	default/materials/materials.cfg \
 	default/materials/mineral_volume/mineral_volume.cfg \
@@ -89,6 +90,7 @@ STANDARD_CFG = \
 	default/regions/regions.cfg \
 	default/salinity/salinity.cfg \
 	default/scco2/mphase/mphase.cfg \
+	default/srcsink_sandbox/srcsink_sandbox.cfg \
 	default/steady/steady.cfg \
 	default/tcond/T_dep_tcond.cfg \
 	default/timestepping/timestepping.cfg \
@@ -114,6 +116,7 @@ STANDARD_CFG = \
 	shortcourse/1D_variably_saturated_flow/vsat_flow.cfg \
 	shortcourse/copper_leaching/cu_leaching.cfg \
 	shortcourse/regional_doublet/regional_doublet.cfg \
+	shortcourse/electron_tower/electron_tower.cfg \
 	surfaceflow/inlinesurface/inlinesurface.cfg \
 	ufd/ufd.cfg \
 	wipp/nuts/nuts.cfg \
@@ -127,7 +130,8 @@ STANDARD_CFG = \
 ifneq ($(strip $(HYPRE_LIB)),)
 STANDARD_CFG += \
 	general/cpr_general/cpr_general.cfg \
-	wipp/wipp_flow/cpr_wipp/cpr_wipp.cfg
+	wipp/wipp_flow/cpr_wipp/cpr_wipp.cfg \
+	wipp/well_model/cpr/cpr_well.cfg
 endif
 
 ifdef RUNTIME_ERROR_CHECKING

@@ -367,7 +367,8 @@ ert.o : \
   patch.o \
   pflotran_constants.o \
   realization_subsurface.o \
-  survey.o
+  survey.o \
+  variables.o
 ert_aux.o : \
   global_aux.o \
   material_aux.o \
@@ -465,7 +466,8 @@ factory_pflotran.o : \
   simulation_inverse.o \
   simulation_multirealization.o \
   simulation_subsurface.o \
-  string.o
+  string.o \
+  utility.o
 factory_subsurface.o : \
   checkpoint.o \
   dataset.o \
@@ -954,6 +956,7 @@ grid.o : \
   option.o \
   pflotran_constants.o \
   region.o \
+  string.o \
   utility.o
 grid_structured.o : \
   connection.o \
@@ -1279,7 +1282,6 @@ inversion_parameter.o : \
   input_aux.o \
   material_aux.o \
   option.o \
-  option_inversion.o \
   pflotran_constants.o \
   string.o \
   units.o \
@@ -1384,6 +1386,7 @@ material.o : \
 material_aux.o : \
   option.o \
   pflotran_constants.o \
+  string.o \
   utility.o \
   variables.o
 material_transform.o : \
@@ -2625,6 +2628,7 @@ reaction_database.o : \
   reaction_gas_aux.o \
   reaction_immobile.o \
   reaction_immobile_aux.o \
+  reaction_inhibition_aux.o \
   reaction_isotherm_aux.o \
   reaction_microbial.o \
   reaction_microbial_aux.o \
@@ -2676,6 +2680,16 @@ reaction_immobile_aux.o : \
   reaction_database_aux.o \
   string.o \
   utility.o
+reaction_inhibition.o : \
+  input_aux.o \
+  option.o \
+  pflotran_constants.o \
+  reaction_aux.o \
+  reaction_inhibition_aux.o \
+  string.o
+reaction_inhibition_aux.o : \
+  pflotran_constants.o \
+  utility.o
 reaction_isotherm.o : \
   global_aux.o \
   input_aux.o \
@@ -2699,6 +2713,8 @@ reaction_microbial.o : \
   pflotran_constants.o \
   reaction_aux.o \
   reaction_immobile_aux.o \
+  reaction_inhibition.o \
+  reaction_inhibition_aux.o \
   reaction_microbial_aux.o \
   reactive_transport_aux.o \
   string.o \
@@ -2706,6 +2722,7 @@ reaction_microbial.o : \
 reaction_microbial_aux.o : \
   pflotran_constants.o \
   reaction_database_aux.o \
+  reaction_inhibition_aux.o \
   utility.o
 reaction_mineral.o : \
   global_aux.o \
@@ -2827,7 +2844,6 @@ reaction_sandbox_clm_cn.o : \
   reaction_sandbox_base.o \
   reactive_transport_aux.o \
   string.o \
-  units.o \
   utility.o
 reaction_sandbox_equilibrate.o : \
   global_aux.o \
@@ -2838,8 +2854,7 @@ reaction_sandbox_equilibrate.o : \
   reaction_aux.o \
   reaction_sandbox_base.o \
   reactive_transport_aux.o \
-  string.o \
-  units.o
+  string.o
 reaction_sandbox_example.o : \
   global_aux.o \
   input_aux.o \
@@ -2849,8 +2864,7 @@ reaction_sandbox_example.o : \
   reaction_aux.o \
   reaction_sandbox_base.o \
   reactive_transport_aux.o \
-  string.o \
-  units.o
+  string.o
 reaction_sandbox_flexbiohill.o : \
   global_aux.o \
   input_aux.o \
@@ -2874,8 +2888,7 @@ reaction_sandbox_gas.o : \
   reaction_immobile_aux.o \
   reaction_sandbox_base.o \
   reactive_transport_aux.o \
-  string.o \
-  units.o
+  string.o
 reaction_sandbox_pnnl_cyber.o : \
   global_aux.o \
   input_aux.o \
@@ -2885,6 +2898,7 @@ reaction_sandbox_pnnl_cyber.o : \
   pflotran_constants.o \
   reaction_aux.o \
   reaction_immobile_aux.o \
+  reaction_inhibition_aux.o \
   reaction_mineral_aux.o \
   reaction_sandbox_base.o \
   reactive_transport_aux.o \
@@ -2898,11 +2912,11 @@ reaction_sandbox_pnnl_lambda.o : \
   option.o \
   pflotran_constants.o \
   reaction_aux.o \
+  reaction_inhibition_aux.o \
   reaction_mineral_aux.o \
   reaction_sandbox_base.o \
   reactive_transport_aux.o \
   string.o \
-  units.o \
   utility.o
 reaction_sandbox_radon.o : \
   global_aux.o \
@@ -2914,8 +2928,7 @@ reaction_sandbox_radon.o : \
   reaction_mineral_aux.o \
   reaction_sandbox_base.o \
   reactive_transport_aux.o \
-  string.o \
-  units.o
+  string.o
 reaction_sandbox_simple.o : \
   global_aux.o \
   material_aux.o \
@@ -2935,8 +2948,7 @@ reaction_sandbox_ufd_wp.o : \
   reaction_immobile_aux.o \
   reaction_sandbox_base.o \
   reactive_transport_aux.o \
-  string.o \
-  units.o
+  string.o
 reaction_solid_solution.o : \
   input_aux.o \
   option.o \
@@ -3003,11 +3015,13 @@ reactive_transport.o : \
   secondary_continuum.o \
   secondary_continuum_aux.o \
   secondary_continuum_np.o \
+  srcsink_sandbox.o \
   string.o \
   transport.o \
   transport_constraint_rt.o \
   transport_np.o \
-  utility.o
+  utility.o \
+  variables.o
 reactive_transport_aux.o : \
   matrix_block_aux.o \
   matrix_zeroing.o \
@@ -3142,6 +3156,7 @@ richards.o : \
   srcsink_sandbox.o \
   srcsink_sandbox_base.o \
   srcsink_sandbox_downreg.o \
+  srcsink_sandbox_pressure.o \
   utility.o \
   variables.o
 richards_aux.o : \
@@ -3331,9 +3346,11 @@ srcsink_sandbox.o : \
   option.o \
   output_aux.o \
   pflotran_constants.o \
+  region.o \
   srcsink_sandbox_base.o \
   srcsink_sandbox_downreg.o \
   srcsink_sandbox_mass_rate.o \
+  srcsink_sandbox_pressure.o \
   srcsink_sandbox_wipp_gas.o \
   srcsink_sandbox_wipp_well.o \
   string.o \
@@ -3346,6 +3363,7 @@ srcsink_sandbox_base.o : \
   material_aux.o \
   option.o \
   pflotran_constants.o \
+  region.o \
   utility.o
 srcsink_sandbox_downreg.o : \
   condition.o \
@@ -3358,6 +3376,7 @@ srcsink_sandbox_downreg.o : \
   option.o \
   pflotran_constants.o \
   reaction_aux.o \
+  region.o \
   srcsink_sandbox_base.o \
   string.o \
   time_storage.o \
@@ -3370,10 +3389,23 @@ srcsink_sandbox_mass_rate.o : \
   option.o \
   pflotran_constants.o \
   reaction_aux.o \
+  region.o \
   srcsink_sandbox_base.o \
   string.o \
   units.o \
   wipp_flow_aux.o
+srcsink_sandbox_pressure.o : \
+  grid.o \
+  input_aux.o \
+  material_aux.o \
+  option.o \
+  pflotran_constants.o \
+  reaction_aux.o \
+  region.o \
+  srcsink_sandbox_base.o \
+  string.o \
+  units.o \
+  utility.o
 srcsink_sandbox_wipp_gas.o : \
   eos_gas.o \
   grid.o \
@@ -3382,6 +3414,7 @@ srcsink_sandbox_wipp_gas.o : \
   option.o \
   pflotran_constants.o \
   reaction_aux.o \
+  region.o \
   srcsink_sandbox_base.o \
   string.o \
   units.o
@@ -3392,6 +3425,7 @@ srcsink_sandbox_wipp_well.o : \
   option.o \
   pflotran_constants.o \
   reaction_aux.o \
+  region.o \
   srcsink_sandbox_base.o \
   string.o \
   units.o
@@ -3584,6 +3618,7 @@ utility.o : \
   input_aux.o \
   option.o \
   pflotran_constants.o \
+  print.o \
   string.o
 variables.o :
 waypoint.o : \
