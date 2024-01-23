@@ -7069,7 +7069,7 @@ function PatchGetVariableValueAtCell(patch,field,reaction_base,option, &
          SECONDARY_TEMPERATURE,LIQUID_DENSITY_MOL,DERIVATIVE, &
          LIQUID_HEAD,VAPOR_PRESSURE,SATURATION_PRESSURE,MAXIMUM_PRESSURE, &
          LIQUID_MASS_FRACTION,GAS_MASS_FRACTION,SOLUTE_CONCENTRATION, &
-         PRECIPITATE_SATURATION,SEC_SALT_MOLE_FRAC)
+         SEC_SALT_MOLE_FRAC)
 
       if (associated(patch%aux%TH)) then
         select case(ivar)
