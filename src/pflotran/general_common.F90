@@ -439,6 +439,8 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   use Upwind_Direction_module
   use Characteristic_Curves_Thermal_module
   use Utility_module
+  use Secondary_Continuum_Aux_module
+  use Secondary_Continuum_module
 
   implicit none
 
