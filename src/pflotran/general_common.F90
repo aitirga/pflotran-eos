@@ -441,6 +441,8 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   use Utility_module
   use Secondary_Continuum_Aux_module
   use Secondary_Continuum_module
+  use Patch_module
+
 
   implicit none
 
@@ -455,6 +457,8 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   type(general_parameter_type) :: general_parameter
   class(cc_thermal_type) :: thermal_cc_up, thermal_cc_dn
   type(sec_gen_type), pointer :: sec_gen_vars(:)
+  type(patch_type),pointer :: patch
+
 
   sec_gen_vars => patch%aux%SC_gen%sec_gen_vars
   PetscReal :: Res(option%nflowdof)
