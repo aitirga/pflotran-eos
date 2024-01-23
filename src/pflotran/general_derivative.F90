@@ -704,10 +704,13 @@ subroutine GeneralDerivativeFluxBC(pert, &
   PetscReal, parameter :: dist(-1:3) = [0.5d0,1.d0,0.d0,0.d0,1.d0]
 
   PetscReal :: v_darcy(2)
+  PetscReal :: vol_frac_prim
 
   PetscBool :: update_upwind_direction_ = PETSC_TRUE
   PetscBool :: count_upwind_direction_flip_ = PETSC_FALSE
   PetscInt :: upwind_direction_(option%nphase)
+
+
 
   PetscInt :: irow
   PetscReal :: res(3)
@@ -715,6 +718,12 @@ subroutine GeneralDerivativeFluxBC(pert, &
   PetscReal :: jac_anal(3,3)
   PetscReal :: jac_num(3,3)
   PetscReal :: jac_dum(3,3)
+
+  if (option%use_sc) then
+    vol_frac_prim = material_auxvar_dn(ZERO_INTEGER)%secondary_prop%epsilon
+  else
+    vol_frac_prim = 1.d0
+  endif
 
   call GeneralPrintAuxVars(general_auxvar_bc,global_auxvar_bc,material_auxvar_dn(0), &
                            natural_id,'boundary',option)
@@ -730,7 +739,7 @@ subroutine GeneralDerivativeFluxBC(pert, &
                      option,v_darcy,res,jac_anal, &
                      update_upwind_direction_, &
                      count_upwind_direction_flip_, &
-                     PETSC_TRUE,PETSC_FALSE, material_auxvar_dn(ZERO_INTEGER)%secondary_prop%epsilon)
+                     PETSC_TRUE,PETSC_FALSE, vol_frac_prim)
 
   do i = 1, 3
     call GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
@@ -742,7 +751,7 @@ subroutine GeneralDerivativeFluxBC(pert, &
                        option,v_darcy,res_pert(:,i),jac_dum, &
                        update_upwind_direction_, &
                        count_upwind_direction_flip_, &
-                       PETSC_FALSE,PETSC_FALSE, material_auxvar_dn(i)%secondary_prop%epsilon)
+                       PETSC_FALSE,PETSC_FALSE, vol_frac_prim)
     do irow = 1, option%nflowdof
       jac_num(irow,i) = (res_pert(irow,i)-res(irow))/pert(i)
     enddo !irow

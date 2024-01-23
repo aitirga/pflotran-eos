@@ -4728,6 +4728,7 @@ subroutine GeneralBCFluxDerivative(ibndtype,auxvar_mapping,auxvars, &
   PetscInt :: upwind_direction_(option%nphase)
   type(general_parameter_type) :: general_parameter
   PetscReal :: Jdn(option%nflowdof,option%nflowdof)
+  PetscReal :: vol_frac_prim
 
   PetscReal :: v_darcy(option%nphase)
   PetscReal :: res(option%nflowdof), res_pert(option%nflowdof)
@@ -4736,6 +4737,12 @@ subroutine GeneralBCFluxDerivative(ibndtype,auxvar_mapping,auxvars, &
 
   Jdn = 0.d0
 !geh:print *, 'GeneralBCFluxDerivative'
+
+  if (option%use_sc) then
+    vol_frac_prim = material_auxvar_dn%secondary_prop%epsilon
+  else
+    vol_frac_prim = 1.d0
+  endif
 
   option%iflag = -2
   call GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
@@ -4750,7 +4757,7 @@ subroutine GeneralBCFluxDerivative(ibndtype,auxvar_mapping,auxvars, &
                      PETSC_FALSE, & ! update the upwind direction
                      ! avoid double counting upwind direction flip
                      PETSC_FALSE, & ! count upwind direction flip
-                     PETSC_FALSE, material_auxvar_dn%secondary_prop%epsilon)
+                     PETSC_FALSE, vol_frac_prim)
 
   if (general_analytical_derivatives) then
     Jdn = Jdum
@@ -4768,7 +4775,7 @@ subroutine GeneralBCFluxDerivative(ibndtype,auxvar_mapping,auxvars, &
                          PETSC_FALSE, & ! analytical derivatives
                          PETSC_FALSE, & ! update the upwind direction
                          count_upwind_direction_flip, &
-                         PETSC_FALSE, material_auxvar_dn%secondary_prop%epsilon)
+                         PETSC_FALSE, vol_frac_prim)
 
 
       do irow = 1, option%nflowdof
