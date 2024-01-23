@@ -444,6 +444,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
 
   implicit none
 
+
   type(general_auxvar_type) :: gen_auxvar_up, gen_auxvar_dn
   type(global_auxvar_type) :: global_auxvar_up, global_auxvar_dn
   type(material_auxvar_type) :: material_auxvar_up, material_auxvar_dn
@@ -538,6 +539,9 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   air_comp_id = option%air_id
   energy_id = option%energy_id
   salt_comp_id = option%salt_id
+
+  patch => realization%patch
+
 
   call ConnectionCalculateDistances(dist,option%gravity,dist_up,dist_dn, &
                                     dist_gravity,upweight)
