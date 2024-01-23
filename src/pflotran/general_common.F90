@@ -117,7 +117,7 @@ subroutine GeneralAccumulation(gen_auxvar,global_auxvar,material_auxvar, &
   ! Res[kmol/sec] = Res[kmol/m^3 void] * por[m^3 void/m^3 bulk] *
   !                 vol[m^3 bulk] / dt[sec]
   Res(1:option%nflowspec) = Res(1:option%nflowspec) * &
-                            porosity * volume_over_dt
+                            porosity * volume_over_dt * 0.1
   if (general_soluble_matrix) then
     ! Res[kmol/sec] = Res[kmol/sec] + (1-por)[m^3 solid/m^3 bulk] * den[kmol/m^3]
     !                 * vol[m^3 bulk] / dt[sec]
@@ -643,7 +643,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
           v_darcy(iphase) = perm_ave_over_dist(iphase) * mobility * delta_pressure
 
           ! q[m^3 phase/sec] = v_darcy[m/sec] * area[m^2]
-          q = v_darcy(iphase) * area / 0.1
+          q = v_darcy(iphase) * area
           ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
           !                             density_ave[kmol phase/m^3 phase]
           tot_mole_flux = q*density_ave
@@ -1107,7 +1107,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
          v_darcy(iphase) = perm_ave_over_dist(iphase) * mobility * delta_pressure
 
          ! q[m^3 phase/sec] = v_darcy[m/sec] * area[m^2]
-         q = v_darcy(iphase) * area / 0.1
+         q = v_darcy(iphase) * area
          ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
          !                             density_ave[kmol phase/m^3 phase]
          tot_mole_flux = q*density_ave
@@ -2811,7 +2811,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
   end select
   if (dabs(v_darcy(iphase)) > 0.d0 .or. mobility > 0.d0) then
     ! q[m^3 phase/sec] = v_darcy[m/sec] * area[m^2]
-    q = v_darcy(iphase) * area / 0.1
+    q = v_darcy(iphase) * area
     ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
     !                             density_ave[kmol phase/m^3 phase]
     tot_mole_flux = q*density_ave
@@ -3171,7 +3171,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
 
   if (dabs(v_darcy(iphase)) > 0.d0 .or. mobility > 0.d0) then
     ! q[m^3 phase/sec] = v_darcy[m/sec] * area[m^2]
-    q = v_darcy(iphase) * area / 0.1
+    q = v_darcy(iphase) * area
     ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
     !                             density_ave[kmol phase/m^3 phase]
     tot_mole_flux = q*density_ave
