@@ -443,7 +443,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   use Patch_module
 
   implicit none
-
+  class(realization_subsurface_type) :: realization
 
   type(general_auxvar_type) :: gen_auxvar_up, gen_auxvar_dn
   type(global_auxvar_type) :: global_auxvar_up, global_auxvar_dn
