@@ -1997,7 +1997,7 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
                      cur_connection_set%dist(:,iconn), &
                      patch%flow_upwind_direction(:,iconn), &
                      general_parameter,option,&
-                     Jup,Jdn, vol_frac_prim)
+                     Jup,Jdn)
       !Jup = Jup * vol_frac_prim
       !Jdn = Jdn * vol_frac_prim
       if (local_id_up > 0) then
@@ -2065,7 +2065,7 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
                       cur_connection_set%dist(:,iconn), &
                       patch%flow_upwind_direction_bc(:,iconn), &
                       general_parameter,option, &
-                      Jdn, vol_frac_prim)
+                      Jdn)
      ! Jup = Jup * vol_frac_prim
      ! Jdn = Jdn * vol_frac_prim
       Jdn = -Jdn
