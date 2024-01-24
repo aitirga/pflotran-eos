@@ -1945,8 +1945,6 @@ subroutine GeneralJacobian(snes,xx,A,B,realization,ierr)
       if (.not.Equal((material_auxvars(ghosted_id)% &
           secondary_prop%epsilon),1.d0)) then
 
-        option%io_buffer = 'INSIDE salt flux terms'
-        call PrintMsg(option)
         sec_diffusion_coefficient = patch%material_property_array(patch%imat(ghosted_id))% &
                                     ptr%multicontinuum%diff_coeff
         sec_porosity = patch%material_property_array(patch%imat(ghosted_id))% &
