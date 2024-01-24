@@ -423,7 +423,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
                        analytical_derivatives, &
                        update_upwind_direction_, &
                        count_upwind_direction_flip_, &
-                       debug_connection)
+                       debug_connectio, vol_frac_prim)
   !
   ! Computes the internal flux terms for the residual
   !
@@ -462,6 +462,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
   PetscReal :: dist_gravity  ! distance along gravity vector
   PetscReal :: dist_up, dist_dn
   PetscReal :: upweight
+  PetscReal :: vol_frac_prim
   PetscInt :: wat_comp_id, air_comp_id, energy_id, salt_comp_id
   PetscInt :: iphase
 
@@ -643,7 +644,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
           v_darcy(iphase) = perm_ave_over_dist(iphase) * mobility * delta_pressure
 
           ! q[m^3 phase/sec] = v_darcy[m/sec] * area[m^2]
-          q = v_darcy(iphase) * area
+          q = v_darcy(iphase) * area / vol_frac_prim
           ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
           !                             density_ave[kmol phase/m^3 phase]
           tot_mole_flux = q*density_ave
@@ -1107,7 +1108,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
          v_darcy(iphase) = perm_ave_over_dist(iphase) * mobility * delta_pressure
 
          ! q[m^3 phase/sec] = v_darcy[m/sec] * area[m^2]
-         q = v_darcy(iphase) * area
+         q = v_darcy(iphase) * area / vol_frac_prim
          ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
          !                             density_ave[kmol phase/m^3 phase]
          tot_mole_flux = q*density_ave
@@ -2556,6 +2557,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
   PetscReal :: xmol_air_up, xmol_air_dn
   PetscReal :: tempreal
   PetscReal :: delta_X_whatever
+  PetscReal :: vol_frac_prim
   PetscReal :: wat_mole_flux, air_mole_flux, salt_mole_flux
   PetscBool :: upwind
 
@@ -2811,7 +2813,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
   end select
   if (dabs(v_darcy(iphase)) > 0.d0 .or. mobility > 0.d0) then
     ! q[m^3 phase/sec] = v_darcy[m/sec] * area[m^2]
-    q = v_darcy(iphase) * area
+    q = v_darcy(iphase) * area / vol_frac_prim
     ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
     !                             density_ave[kmol phase/m^3 phase]
     tot_mole_flux = q*density_ave
@@ -3171,7 +3173,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
 
   if (dabs(v_darcy(iphase)) > 0.d0 .or. mobility > 0.d0) then
     ! q[m^3 phase/sec] = v_darcy[m/sec] * area[m^2]
-    q = v_darcy(iphase) * area
+    q = v_darcy(iphase) * area / vol_frac_prim
     ! mole_flux[kmol phase/sec] = q[m^3 phase/sec] *
     !                             density_ave[kmol phase/m^3 phase]
     tot_mole_flux = q*density_ave
@@ -4587,12 +4589,19 @@ subroutine GeneralFluxDerivative(gen_auxvar_up,global_auxvar_up, &
   PetscReal :: v_darcy(option%nphase)
   PetscReal :: res(option%nflowdof), res_pert(option%nflowdof)
   PetscInt :: idof, irow
+  PetscReal :: vol_frac_prim
 
   Jup = 0.d0
   Jdn = 0.d0
 
 !geh:print *, 'GeneralFluxDerivative'
   option%iflag = -2
+  if (option%use_sc) then
+    vol_frac_prim = material_auxvar_up%secondary_prop%epsilon
+  else
+    vol_frac_prim = 1.0
+  end if
+
   call GeneralFlux(gen_auxvar_up(ZERO_INTEGER),global_auxvar_up, &
                    material_auxvar_up, &
                    thermal_cc_up, &
@@ -4606,7 +4615,7 @@ subroutine GeneralFluxDerivative(gen_auxvar_up,global_auxvar_up, &
                    PETSC_FALSE, & ! update the upwind direction
                    ! avoid double counting upwind direction flip
                    PETSC_FALSE, & ! count upwind direction flip
-                   PETSC_FALSE)
+                   PETSC_FALSE, vol_frac_prim)
 
   if (general_analytical_derivatives) then
     Jup = Janal_up
@@ -4626,7 +4635,7 @@ subroutine GeneralFluxDerivative(gen_auxvar_up,global_auxvar_up, &
                        PETSC_FALSE, & ! analytical derivatives
                        PETSC_FALSE, & ! update the upwind direction
                        count_upwind_direction_flip, &
-                       PETSC_FALSE)
+                       PETSC_FALSE, vol_frac_prim)
 
       do irow = 1, option%nflowdof
         Jup(irow,idof) = (res_pert(irow)-res(irow))/gen_auxvar_up(idof)%pert
@@ -4649,7 +4658,7 @@ subroutine GeneralFluxDerivative(gen_auxvar_up,global_auxvar_up, &
                        PETSC_FALSE, & ! analytical derivatives
                        PETSC_FALSE, & ! update the upwind direction
                        count_upwind_direction_flip, &
-                       PETSC_FALSE)
+                       PETSC_FALSE, vol_frac_prim)
 
 
       do irow = 1, option%nflowdof
@@ -4719,9 +4728,16 @@ subroutine GeneralBCFluxDerivative(ibndtype,auxvar_mapping,auxvars, &
   PetscReal :: res(option%nflowdof), res_pert(option%nflowdof)
   PetscInt :: idof, irow
   PetscReal :: Jdum(option%nflowdof,option%nflowdof)
+  PetscReal :: vol_frac_prim
 
   Jdn = 0.d0
 !geh:print *, 'GeneralBCFluxDerivative'
+
+  if (option%use_sc) then
+    vol_frac_prim =   material_auxvar_dn%secondary_prop%epsilon
+  else
+    vol_frac_prim = 1.0
+  end if
 
   option%iflag = -2
   call GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
@@ -4736,7 +4752,7 @@ subroutine GeneralBCFluxDerivative(ibndtype,auxvar_mapping,auxvars, &
                      PETSC_FALSE, & ! update the upwind direction
                      ! avoid double counting upwind direction flip
                      PETSC_FALSE, & ! count upwind direction flip
-                     PETSC_FALSE)
+                     PETSC_FALSE, vol_frac_prim)
 
   if (general_analytical_derivatives) then
     Jdn = Jdum
@@ -4754,7 +4770,7 @@ subroutine GeneralBCFluxDerivative(ibndtype,auxvar_mapping,auxvars, &
                          PETSC_FALSE, & ! analytical derivatives
                          PETSC_FALSE, & ! update the upwind direction
                          count_upwind_direction_flip, &
-                         PETSC_FALSE)
+                         PETSC_FALSE, vol_frac_prim)
 
 
       do irow = 1, option%nflowdof

@@ -1291,6 +1291,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
   PetscReal :: Jac_dummy(realization%option%nflowdof, &
                          realization%option%nflowdof)
   PetscReal :: v_darcy(realization%option%nphase)
+  PetscReal :: vol_frac_prim
 
 
   discretization => realization%discretization
@@ -1415,6 +1416,12 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
       icct_up = patch%cct_id(ghosted_id_up)
       icct_dn = patch%cct_id(ghosted_id_dn)
 
+      if (option%use_sc) then
+        vol_frac_prim = material_auxvar(ghosted_id_up)%secondary_prop%epsilon
+      else
+        vol_frac_prim = 1.0
+      end if
+
       call GeneralFlux(gen_auxvars(ZERO_INTEGER,ghosted_id_up), &
                        global_auxvars(ghosted_id_up), &
                        material_auxvars(ghosted_id_up), &
@@ -1432,7 +1439,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                        update_upwind_direction, &
                        count_upwind_direction_flip, &
                        (local_id_up == general_debug_cell_id .or. &
-                        local_id_dn == general_debug_cell_id))
+                        local_id_dn == general_debug_cell_id), vol_frac_prim)
 
       patch%internal_velocities(:,sum_connection) = v_darcy
       if (associated(patch%internal_flow_fluxes)) then
@@ -1479,6 +1486,12 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
 
       icct_dn = patch%cct_id(ghosted_id)
 
+      if (option%use_sc) then
+        vol_frac_prim =   material_auxvars(ghosted_id)%secondary_prop%epsilon
+      else
+        vol_frac_prim = 1.0
+      end if
+
       call GeneralBCFlux(boundary_condition%flow_bc_type, &
                      boundary_condition%flow_aux_mapping, &
                      boundary_condition%flow_aux_real_var(:,iconn), &
@@ -1496,7 +1509,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                      general_analytical_derivatives, &
                      update_upwind_direction, &
                      count_upwind_direction_flip, &
-                     local_id == general_debug_cell_id)
+                     local_id == general_debug_cell_id, vol_frac_prim)
       patch%boundary_velocities(:,sum_connection) = v_darcy
       if (associated(patch%boundary_flow_fluxes)) then
         patch%boundary_flow_fluxes(:,sum_connection) = Res(:)
