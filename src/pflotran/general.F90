@@ -1491,8 +1491,8 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
   ! Secondary continuum contribution
   ! only one secondary continuum for now for each primary continuum node
 
-    option%io_buffer = 'INSIDE salt flux terms'
-      call PrintMsg(option)
+!    option%io_buffer = 'INSIDE salt flux terms'
+!      call PrintMsg(option)
 
     do local_id = 1, grid%nlmax  ! For each local node do...
       ghosted_id = grid%nL2G(local_id)
@@ -1502,8 +1502,8 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
       if (Equal((material_auxvars(ghosted_id)% &
           secondary_prop%epsilon),1.d0)) cycle
 
-      option%io_buffer = ' NO CYCLE! '
-        call PrintMsg(option)
+!      option%io_buffer = ' NO CYCLE! '
+!        call PrintMsg(option)
 
 
       iend = local_id*option%nflowdof
@@ -1518,7 +1518,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                                 sec_diffusion_coefficient,&
                                 gen_auxvars(ZERO_INTEGER,ghosted_id)%xmol(3,1), &
                                 option,res_sec_gen)
-      r_p(iend-1) = r_p(iend-1) - res_sec_gen*material_auxvars(ghosted_id)%volume*1000000
+      r_p(iend-1) = r_p(iend-1) - material_auxvars(ghosted_id)%volume
 
     enddo
   endif
