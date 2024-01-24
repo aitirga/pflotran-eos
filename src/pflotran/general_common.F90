@@ -423,7 +423,7 @@ subroutine GeneralFlux(gen_auxvar_up,global_auxvar_up, &
                        analytical_derivatives, &
                        update_upwind_direction_, &
                        count_upwind_direction_flip_, &
-                       debug_connectio, vol_frac_prim)
+                       debug_connection, vol_frac_prim)
   !
   ! Computes the internal flux terms for the residual
   !
