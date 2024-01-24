@@ -1490,6 +1490,10 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
   if (option%use_sc) then
   ! Secondary continuum contribution
   ! only one secondary continuum for now for each primary continuum node
+
+    option%io_buffer = 'INSIDE salt flux terms'
+      call PrintMsg(option)
+
     do local_id = 1, grid%nlmax  ! For each local node do...
       ghosted_id = grid%nL2G(local_id)
       if (associated(patch%imat)) then
@@ -1497,6 +1501,11 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
       endif
       if (Equal((material_auxvars(ghosted_id)% &
           secondary_prop%epsilon),1.d0)) cycle
+
+      option%io_buffer = ' NO CYCLE! '
+        call PrintMsg(option)
+
+
       iend = local_id*option%nflowdof
       istart = iend-option%nflowdof+1
       vol_frac_prim = material_auxvars(ghosted_id)%secondary_prop%epsilon
