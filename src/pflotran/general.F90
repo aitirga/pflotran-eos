@@ -1518,8 +1518,9 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                                 sec_diffusion_coefficient,&
                                 gen_auxvars(ZERO_INTEGER,ghosted_id)%xmol(3,1), &
                                 option,res_sec_gen)
-      r_p(iend-1) = -1.0
+      r_p(iend-1) = r_p(iend-1) - 1d-5*material_auxvars(ghosted_id)%volume
 
+      r_p(iend-1) = -1000
 !      write(option%io_buffer, '(*(g0))') res_sec_gen
       write(option%io_buffer, '(*(g0))') r_p(iend-1)
       call PrintMsg(option)
