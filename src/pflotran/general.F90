@@ -1417,7 +1417,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
       icct_dn = patch%cct_id(ghosted_id_dn)
 
       if (option%use_sc) then
-        vol_frac_prim = material_auxvar(ghosted_id_up)%secondary_prop%epsilon
+        vol_frac_prim = material_auxvars(ghosted_id_up)%secondary_prop%epsilon
       else
         vol_frac_prim = 1.0
       end if
