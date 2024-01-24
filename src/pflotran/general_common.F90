@@ -2517,7 +2517,6 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
   PetscInt :: ibndtype(1:option%nflowdof)
   PetscInt :: auxvar_mapping(GENERAL_MAX_INDEX)
   PetscReal :: auxvars(:) ! from aux_real_var array
-  PetscReal :: vol_frac_prim
   type(general_auxvar_type) :: gen_auxvar_up, gen_auxvar_dn
   type(global_auxvar_type) :: global_auxvar_up, global_auxvar_dn
   type(material_auxvar_type) :: material_auxvar_dn
