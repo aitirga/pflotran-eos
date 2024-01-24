@@ -1520,7 +1520,7 @@ subroutine GeneralResidual(snes,xx,r,realization,ierr)
                                 option,res_sec_gen)
       r_p(iend-1) = r_p(iend-1) - res_sec_gen*material_auxvars(ghosted_id)%volume
 
-      write(ption%io_buffer, '(*(g0))') res_sec_gen
+      write(option%io_buffer, '(*(g0))') res_sec_gen
       call PrintMsg(option)
 
     enddo
