@@ -2496,7 +2496,7 @@ subroutine GeneralBCFlux(ibndtype,auxvar_mapping,auxvars, &
                          analytical_derivatives, &
                          update_upwind_direction_, &
                          count_upwind_direction_flip_, &
-                         debug_connection)
+                         debug_connection, vol_frac_prim)
   !
   ! Computes the boundary flux terms for the residual
   !
