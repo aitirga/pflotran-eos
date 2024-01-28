@@ -788,9 +788,9 @@ subroutine PMGeneralUpdateTimestep(this,update_dt, &
 #endif
 
   if (update_dt .and. iacceleration /= 0) then
-    fac = 1.1d0 !0.5d0
+    fac = 0.5d0
     if (num_newton_iterations >= iacceleration) then
-      fac = 1.1 d0 !0.33d0
+      fac = 0.33d0
       umin = 0.d0
     else
       up = this%pressure_change_governor/(this%max_pressure_change+0.1)
