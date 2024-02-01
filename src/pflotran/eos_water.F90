@@ -4057,7 +4057,7 @@ subroutine EOSWaterDenLinearSaltMolarExt(tin, pin, aux, &
   PetscReal, intent(out) :: dwmol ! kmol/m^3
   PetscReal, intent(out) :: dwp ! kmol/m^3-Pa
   PetscReal, intent(out) :: dwt ! kmol/m^3-C
-  PetscErrorCode, intent(out) :: ierr
+  PetscErrorCode, intent(inout) :: ierr
 
   PetscReal :: s  !salt molar concetration (M, mol/L)
 
