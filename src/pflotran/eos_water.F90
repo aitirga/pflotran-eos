@@ -48,6 +48,10 @@ module EOS_Water_module
   PetscReal :: linear_reference_pressure
   PetscReal :: linear_water_compressibility
 
+  ! linear salt concentration
+  PetscReal :: linear_salt_reference_density
+  PetscReal :: linear_salt_coefficient
+
   ! halite saturated brine
   PetscBool :: halite_saturated_brine
 
@@ -502,6 +506,12 @@ subroutine EOSWaterSetDensity(keyword,aux)
     case('BATZLE_AND_WANG')
       EOSWaterDensityPtr => EOSWaterDensityBatzleAndWang
       EOSWaterDensityExtPtr => EOSWaterDensityBatzleAndWangExt
+
+    case('LINEAR_SALT')
+      linear_salt_reference_density = aux(1)
+      linear_salt_coefficient = aux(2)
+      constant_density = aux(1)
+      EOSWaterDensityExtPtr => EOSWaterDenLinearSaltMolarExt
     case('SPARROW')
       EOSWaterDensityExtPtr => EOSWaterDensitySparrowExt
     case('DRIESNER')
@@ -4023,6 +4033,52 @@ subroutine EOSWaterDensityBatzleAndWangExt(tin, pin, aux, &
   endif
 
 end subroutine EOSWaterDensityBatzleAndWangExt
+
+
+subroutine EOSWaterDenLinearSaltMolarExt(tin, pin, aux, &
+                                           calculate_derivatives, &
+                                           dw, dwmol, dwp, dwt, ierr)
+
+  ! Water density dependent on salt (molar, M, mol/L) concentration
+  ! model taken from the Elder problem setup
+  !
+  !
+  ! Author: Paolo Orsini
+  ! Date: 02/02/17
+  !
+  implicit none
+
+  PetscReal, intent(in) :: tin   ! Temperature in centigrade
+  PetscReal, intent(in) :: pin   ! Pressure in Pascal
+  PetscReal, intent(in) :: aux(*)
+  PetscBool, intent(in) :: calculate_derivatives
+  PetscReal, intent(out) :: dw ! kg/m^3
+  PetscReal, intent(out) :: dwmol ! kmol/m^3
+  PetscReal, intent(out) :: dwp ! kmol/m^3-Pa
+  PetscReal, intent(out) :: dwt ! kmol/m^3-C
+  PetscErrorCode, intent(out) :: ierr
+
+  PetscReal :: s  !salt molar concetration (M, mol/L)
+
+  s = aux(1)
+
+  !kg/m3     !kg/m3
+  dw = linear_salt_reference_density + &
+        !kg/mol * mol/dm3 = kg/dm3 -> kg/m3
+        linear_salt_coefficient * s * 1.0d3
+
+  dwmol = dw/FMWH2O ! kmol/m^3
+
+  if (calculate_derivatives) then
+    dwp = 0.0d0
+    dwt = 0.0d0
+  else
+    dwp = UNINITIALIZED_DOUBLE
+    dwt = UNINITIALIZED_DOUBLE
+  endif
+
+end subroutine EOSWaterDenLinearSaltMolarExt
+
 
 ! ************************************************************************** !
 

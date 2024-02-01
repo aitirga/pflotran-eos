@@ -131,7 +131,7 @@ subroutine EOSRead(input,option)
                 call InputErrorMsg(input,option,'THERMAL_EXPANSION', &
                                    'EOS,WATER,DENSITY,EXPONENTIAL_TEMPERATURE')
 
-                case('LINEAR_SALT_MOLAR')
+                case('LINEAR_SALT')
                 call InputReadDouble(input,option,temparray(1))
                 call InputErrorMsg(input,option,'REFERENCE_DENSITY', &
                                    'EOS,WATER,DENSITY,LINEAR_SALT')
