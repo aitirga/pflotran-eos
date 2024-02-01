@@ -511,6 +511,7 @@ subroutine EOSWaterSetDensity(keyword,aux)
       linear_salt_reference_density = aux(1)
       linear_salt_coefficient = aux(2)
       constant_density = aux(1)
+      EOSWaterDensityPtr => EOSWaterDensityConstant
       EOSWaterDensityExtPtr => EOSWaterDenLinearSaltMolarExt
     case('SPARROW')
       EOSWaterDensityExtPtr => EOSWaterDensitySparrowExt
