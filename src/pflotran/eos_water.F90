@@ -4062,6 +4062,8 @@ subroutine EOSWaterDenLinearSaltMolarExt(tin, pin, aux, &
   PetscReal :: s  !salt molar concetration (M, mol/L)
 
   s = aux(1)
+  call EOSWaterDensityPtr(tin, pin, calculate_derivatives, &
+                      dw, dwmol, dwp, dwt, ierr)
 
   !kg/m3     !kg/m3
   dw = linear_salt_reference_density + &
@@ -4107,8 +4109,7 @@ subroutine EOSWaterDenLinearSaltMolar(tin, pin, aux, &
   PetscReal :: s  !salt molar concetration (M, mol/L)
 
   s = aux(1)
-  call EOSWaterDensityPtr(tin, pin, calculate_derivatives, &
-                        dw, dwmol, dwp, dwt, ierr)
+
 
   !kg/m3     !kg/m3
   dw = linear_salt_reference_density + &
