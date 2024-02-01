@@ -293,23 +293,23 @@ recursive subroutine PMAuxiliaryInitializeRun(this)
 !      call MatSetOption(Jacobian,MAT_NEW_NONZERO_ALLOCATION_ERR,PETSC_FALSE, &
 !                        ierr);CHKERRQ(ierr)
     case('INVERSION')
-    case('SALINITY')
-      ! check if any boundary conditions are hydrostatic, as hydrostatic are
-      ! currently not supported
-      boundary_condition => &
-        this%realization%patch%boundary_condition_list%first
-      do
-        if (.not.associated(boundary_condition)) exit
-        if (associated(boundary_condition%flow_condition)) then
-          if (FlowConditionIsHydrostatic(boundary_condition% &
-                                           flow_condition)) then
-            this%option%io_buffer = 'Hydrostatic flow conditions are &
-              &currently not supported by the SALINITY process model.'
-            call PrintErrMsg(this%option)
-          endif
-        endif
-        boundary_condition => boundary_condition%next
-      enddo
+!    case('SALINITY')
+!      ! check if any boundary conditions are hydrostatic, as hydrostatic are
+!      ! currently not supported
+!      boundary_condition => &
+!        this%realization%patch%boundary_condition_list%first
+!      do
+!        if (.not.associated(boundary_condition)) exit
+!        if (associated(boundary_condition%flow_condition)) then
+!          if (FlowConditionIsHydrostatic(boundary_condition% &
+!                                           flow_condition)) then
+!            this%option%io_buffer = 'Hydrostatic flow conditions are &
+!              &currently not supported by the SALINITY process model.'
+!            call PrintErrMsg(this%option)
+!          endif
+!        endif
+!        boundary_condition => boundary_condition%next
+!      enddo
 
       ! set up species names
       do i =1, this%salinity%nspecies
