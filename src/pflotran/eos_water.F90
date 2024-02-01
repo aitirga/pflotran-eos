@@ -511,7 +511,7 @@ subroutine EOSWaterSetDensity(keyword,aux)
       linear_salt_reference_density = aux(1)
       linear_salt_coefficient = aux(2)
       constant_density = aux(1)
-!      EOSWaterDensityPtr => EOSWaterDensityConstant
+      EOSWaterDensityPtr => EOSWaterDenLinearSaltMolar
       EOSWaterDensityExtPtr => EOSWaterDenLinearSaltMolarExt
     case('SPARROW')
       EOSWaterDensityExtPtr => EOSWaterDensitySparrowExt
@@ -4079,6 +4079,53 @@ subroutine EOSWaterDenLinearSaltMolarExt(tin, pin, aux, &
   endif
 
 end subroutine EOSWaterDenLinearSaltMolarExt
+
+
+subroutine EOSWaterDenLinearSaltMolar(tin, pin, aux, &
+                                           calculate_derivatives, &
+                                           dw, dwmol, dwp, dwt, ierr)
+
+  ! Water density dependent on salt (molar, M, mol/L) concentration
+  ! model taken from the Elder problem setup
+  !
+  !
+  ! Author: Paolo Orsini
+  ! Date: 02/02/17
+  !
+  implicit none
+
+  PetscReal, intent(in) :: tin   ! Temperature in centigrade
+  PetscReal, intent(in) :: pin   ! Pressure in Pascal
+  PetscReal, intent(in) :: aux(*)
+  PetscBool, intent(in) :: calculate_derivatives
+  PetscReal, intent(out) :: dw ! kg/m^3
+  PetscReal, intent(out) :: dwmol ! kmol/m^3
+  PetscReal, intent(out) :: dwp ! kmol/m^3-Pa
+  PetscReal, intent(out) :: dwt ! kmol/m^3-C
+  PetscErrorCode, intent(inout) :: ierr
+
+  PetscReal :: s  !salt molar concetration (M, mol/L)
+
+  s = aux(1)
+  call EOSWaterDensityPtr(tin, pin, calculate_derivatives, &
+                        dw, dwmol, dwp, dwt, ierr)
+
+  !kg/m3     !kg/m3
+  dw = linear_salt_reference_density + &
+        !kg/mol * mol/dm3 = kg/dm3 -> kg/m3
+        linear_salt_coefficient * s * 1.0d3
+
+  dwmol = dw/FMWH2O ! kmol/m^3
+
+  if (calculate_derivatives) then
+    dwp = 0.0d0
+    dwt = 0.0d0
+  else
+    dwp = UNINITIALIZED_DOUBLE
+    dwt = UNINITIALIZED_DOUBLE
+  endif
+
+end subroutine EOSWaterDenLinearSaltMolar
 
 
 ! ************************************************************************** !
