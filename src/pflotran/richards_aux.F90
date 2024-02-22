@@ -335,8 +335,8 @@ subroutine RichardsAuxVarCompute(x,auxvar,global_auxvar,material_auxvar, &
       aux(1) = global_auxvar%m_nacl(1)
     endif
     else
-      aux(1) = 0.25d0
-      !call EOSWaterComputeSalinity(gen_auxvar%temp,aux(1))
+!      aux(1) = 0.25d0
+      call EOSWaterComputeSalinity(global_auxvar%temp,aux(1))
     endif
     call EOSWaterDensityExt(global_auxvar%temp,pw,aux, &
                             dw_kg,dw_mol,dw_dp,dw_dt,ierr)
