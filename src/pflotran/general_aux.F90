@@ -1024,7 +1024,7 @@ subroutine GeneralAuxVarCompute(x,gen_auxvar,global_auxvar,material_auxvar, &
                 aux(1) = global_auxvar%m_nacl(1)
              endif
           else
-             aux(1) = 0.25
+             call EOSWaterComputeSalinity(gen_auxvar%temp,aux(1))
           endif
           if (associated(gen_auxvar%d)) then
              call EOSWaterSaturationPressureExt(gen_auxvar%temp, aux,&
