@@ -311,19 +311,19 @@ subroutine RichardsAuxVarCompute(x,auxvar,global_auxvar,material_auxvar, &
     pw = global_auxvar%pres(1)
   endif
 
-  if (.not.option%flow%density_depends_on_salinity) then
-    call EOSWaterDensity(global_auxvar%temp,pw,dw_kg,dw_mol, &
-                         dw_dp,dw_dt,ierr)
-    if (ierr /= 0) then
-      call PrintMsgByCell(option,natural_id, &
-                          'Error in RichardsAuxVarCompute->EOSWaterDensity')
-    endif
-    ! may need to compute dpsat_dt to pass to VISW
-    call EOSWaterSaturationPressure(global_auxvar%temp,sat_pressure,ierr)
-    !geh: 0.d0 passed in for derivative of pressure w/respect to temp
-    call EOSWaterViscosity(global_auxvar%temp,pw,sat_pressure,0.d0, &
-                           visl,dvis_dt,dvis_dp,ierr)
-  else
+!  if (.not.option%flow%density_depends_on_salinity) then
+!    call EOSWaterDensity(global_auxvar%temp,pw,dw_kg,dw_mol, &
+!                         dw_dp,dw_dt,ierr)
+!    if (ierr /= 0) then
+!      call PrintMsgByCell(option,natural_id, &
+!                          'Error in RichardsAuxVarCompute->EOSWaterDensity')
+!    endif
+!    ! may need to compute dpsat_dt to pass to VISW
+!    call EOSWaterSaturationPressure(global_auxvar%temp,sat_pressure,ierr)
+!    !geh: 0.d0 passed in for derivative of pressure w/respect to temp
+!    call EOSWaterViscosity(global_auxvar%temp,pw,sat_pressure,0.d0, &
+!                           visl,dvis_dt,dvis_dp,ierr)
+!  else
     if (option%iflag == RICHARDS_UPDATE_FOR_FIXED_ACCUM) then
       ! For the computation of fixed accumulation term use NaCl
       ! value, m_nacl(2), from the previous time step.
@@ -341,7 +341,7 @@ subroutine RichardsAuxVarCompute(x,auxvar,global_auxvar,material_auxvar, &
     endif
     call EOSWaterViscosityExt(global_auxvar%temp,pw,sat_pressure,0.d0,aux, &
                               visl,dvis_dt,dvis_dp,ierr)
-  endif
+!  endif
   if (.not.saturated) then !kludge since pw is constant in the unsat zone
     dvis_dp = 0.d0
     dw_dp = 0.d0
