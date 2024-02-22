@@ -20,8 +20,8 @@ module Richards_Aux_module
   PetscInt, public :: richards_ts_cut_count
   PetscInt, public :: richards_ts_count
 
-  PetscInt, parameter, public :: RICHARDS_UPDATE_FOR_FIXED_ACCUM = 0
-  PetscInt, parameter, public :: RICHARDS_UPDATE_FOR_ACCUM = 0
+  PetscInt, parameter, public :: RICHARDS_UPDATE_FOR_FIXED_ACCUM = 1
+  PetscInt, parameter, public :: RICHARDS_UPDATE_FOR_ACCUM = 1
 
   type, public :: richards_auxvar_type
 
@@ -324,6 +324,7 @@ subroutine RichardsAuxVarCompute(x,auxvar,global_auxvar,material_auxvar, &
     call EOSWaterViscosity(global_auxvar%temp,pw,sat_pressure,0.d0, &
                            visl,dvis_dt,dvis_dp,ierr)
   else
+    if (global_auxvar%m_nacl(1) > 0.d0) then
     if (option%iflag == RICHARDS_UPDATE_FOR_FIXED_ACCUM) then
       ! For the computation of fixed accumulation term use NaCl
       ! value, m_nacl(2), from the previous time step.
@@ -333,6 +334,12 @@ subroutine RichardsAuxVarCompute(x,auxvar,global_auxvar,material_auxvar, &
       ! the accumulation term
       aux(1) = global_auxvar%m_nacl(1)
     endif
+    else
+       call EOSWaterComputeSalinity(gen_auxvar%temp,aux(1))
+    endif
+
+    endif
+    end if
     call EOSWaterDensityExt(global_auxvar%temp,pw,aux, &
                             dw_kg,dw_mol,dw_dp,dw_dt,ierr)
     if (ierr /= 0) then
