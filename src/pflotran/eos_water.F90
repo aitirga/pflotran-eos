@@ -4064,9 +4064,10 @@ subroutine EOSWaterDenLinearSaltMolarExt(tin, pin, aux, &
   s = aux(1)
 
   !kg/m3     !kg/m3
-  dw = linear_salt_reference_density + &
-        !kg/mol * mol/dm3 = kg/dm3 -> kg/m3
-        linear_salt_coefficient * s * 1.0d3
+!  dw = linear_salt_reference_density + &
+!        !kg/mol * mol/dm3 = kg/dm3 -> kg/m3
+!        linear_salt_coefficient * s * 1.0d3
+  dw = pin * 1.0d-3
 
   dwmol = dw/FMWH2O ! kmol/m^3
 
