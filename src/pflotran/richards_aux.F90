@@ -324,7 +324,6 @@ subroutine RichardsAuxVarCompute(x,auxvar,global_auxvar,material_auxvar, &
     call EOSWaterViscosity(global_auxvar%temp,pw,sat_pressure,0.d0, &
                            visl,dvis_dt,dvis_dp,ierr)
   else
-    if (global_auxvar%m_nacl(1) > 0.d0) then
     if (option%iflag == RICHARDS_UPDATE_FOR_FIXED_ACCUM) then
       ! For the computation of fixed accumulation term use NaCl
       ! value, m_nacl(2), from the previous time step.
@@ -333,10 +332,6 @@ subroutine RichardsAuxVarCompute(x,auxvar,global_auxvar,material_auxvar, &
       ! Use NaCl value for the current time step, m_nacl(1), for computing
       ! the accumulation term
       aux(1) = global_auxvar%m_nacl(1)
-    endif
-    else
-!      aux(1) = 0.25d0
-      call EOSWaterComputeSalinity(global_auxvar%temp,aux(1))
     endif
     call EOSWaterDensityExt(global_auxvar%temp,pw,aux, &
                             dw_kg,dw_mol,dw_dp,dw_dt,ierr)
