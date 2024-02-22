@@ -20,7 +20,7 @@ module Richards_Aux_module
   PetscInt, public :: richards_ts_cut_count
   PetscInt, public :: richards_ts_count
 
-  PetscInt, parameter, public :: RICHARDS_UPDATE_FOR_FIXED_ACCUM = 1
+  PetscInt, parameter, public :: RICHARDS_UPDATE_FOR_FIXED_ACCUM = 0
   PetscInt, parameter, public :: RICHARDS_UPDATE_FOR_ACCUM = 1
 
   type, public :: richards_auxvar_type
