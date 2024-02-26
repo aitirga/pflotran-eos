@@ -2182,7 +2182,7 @@ subroutine SecondaryRTGetVariable(realization, vec, ivar, isubvar, mc_layer)
         else
           vec_p(local_id) = &
             patch%aux%SC_RT%sec_transport_vars(grid%nL2G(local_id))% &
-            updated_conc(isubvar,mc_layer) * patch%aux%Global%auxvars(grid%nL2G(local_id))%den / 1000.d0
+            updated_conc(isubvar,mc_layer) * patch%aux%Global%auxvars(grid%nL2G(local_id))%den(1) / 1000.d0
         endif
       enddo
     case(MINERAL_VOLUME_FRACTION)
