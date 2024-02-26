@@ -2281,35 +2281,35 @@ subroutine SecondaryRTSetVariable(realization, vec, vec_format, ivar, isubvar, m
       do local_id=1, grid%nlmax
         if (Initialized(vec_p(local_id))) then
           patch%aux%SC_RT%sec_transport_vars(grid%nL2G(local_id))% &
-            updated_conc(isubvar,mc_layer) = vec_p(local_id) * patch%aux%Global%auxvars(grid%nL2G(local_id))%den(1) / 1000.0
+            updated_conc(isubvar,mc_layer) = vec_p(local_id) * patch%aux%Global%auxvars(grid%nL2G(local_id))%den / 1000.d0
         endif
       enddo
     case(MINERAL_VOLUME_FRACTION)
       do local_id=1, grid%nlmax
         if (Initialized(vec_p(local_id))) then
           patch%aux%SC_RT%sec_transport_vars(grid%nL2G(local_id))% &
-            sec_rt_auxvar(mc_layer)%mnrl_volfrac(isubvar) = vec_p(local_id) * patch%aux%Global%auxvars(grid%nL2G(local_id))%den(1) / 1000.0
+            sec_rt_auxvar(mc_layer)%mnrl_volfrac(isubvar) = vec_p(local_id)
         endif
       enddo
     case(REACTION_AUXILIARY)
       do local_id=1, grid%nlmax
         if (Initialized(vec_p(local_id))) then
           patch%aux%SC_RT%sec_transport_vars(grid%nL2G(local_id))% &
-            sec_rt_auxvar(mc_layer)%auxiliary_data(isubvar) = vec_p(local_id)* patch%aux%Global%auxvars(grid%nL2G(local_id))%den(1) / 1000.0
+            sec_rt_auxvar(mc_layer)%auxiliary_data(isubvar) = vec_p(local_id)
         endif
       enddo
     case(PRIMARY_ACTIVITY_COEF)
       do local_id=1, grid%nlmax
         if (Initialized(vec_p(local_id))) then
           patch%aux%SC_RT%sec_transport_vars(grid%nL2G(local_id))% &
-            sec_rt_auxvar(mc_layer)%pri_act_coef(isubvar) = vec_p(local_id)* patch%aux%Global%auxvars(grid%nL2G(local_id))%den(1) / 1000.0
+            sec_rt_auxvar(mc_layer)%pri_act_coef(isubvar) = vec_p(local_id)
         endif
       enddo
     case(SECONDARY_ACTIVITY_COEF)
       do local_id=1, grid%nlmax
         if (Initialized(vec_p(local_id))) then
           patch%aux%SC_RT%sec_transport_vars(grid%nL2G(local_id))% &
-            sec_rt_auxvar(mc_layer)%sec_act_coef(isubvar) = vec_p(local_id)* patch%aux%Global%auxvars(grid%nL2G(local_id))%den(1) / 1000.0
+            sec_rt_auxvar(mc_layer)%sec_act_coef(isubvar) = vec_p(local_id) * patch%aux%Global%auxvars(grid%nL2G(local_id))%den / 1000.d0
         endif
       enddo
   end select
