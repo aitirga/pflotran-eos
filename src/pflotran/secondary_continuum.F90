@@ -2281,7 +2281,7 @@ subroutine SecondaryRTSetVariable(realization, vec, vec_format, ivar, isubvar, m
       do local_id=1, grid%nlmax
         if (Initialized(vec_p(local_id))) then
           patch%aux%SC_RT%sec_transport_vars(grid%nL2G(local_id))% &
-            updated_conc(isubvar,mc_layer) = vec_p(local_id) * patch%aux%Global%auxvars(grid%nL2G(local_id))%istate
+            updated_conc(isubvar,mc_layer) = vec_p(local_id) * patch%aux%Global%auxvars(grid%nL2G(local_id))%den(1)
         endif
       enddo
     case(MINERAL_VOLUME_FRACTION)
